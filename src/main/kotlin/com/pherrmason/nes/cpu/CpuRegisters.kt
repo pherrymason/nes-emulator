@@ -4,13 +4,13 @@ class CpuRegisters {
     // Accumulator
     // and along with the arithmetic logic unit (ALU), supports using the status register for carrying, overflow
     // detection, and so on.
-    var a = 0x00;
+    var a: Byte = 0x00;
 
     // Indexes X Y
     // used for several addressing modes. They can be used as loop counters easily, using INC/DEC and branch
     // instructions. Not being the accumulator, they have limited addressing modes themselves when loading and saving.
-    var x = 0x00;
-    var y = 0x00;
+    var x: Byte = 0x00;
+    var y: Byte = 0x00;
 
     // Program Counter:
     // supports 65536 direct (unbanked) memory locations, however not all values are sent to the cartridge.
@@ -20,7 +20,7 @@ class CpuRegisters {
 
     // Stack Pointer:
     // can be accessed using interrupts, pulls, pushes, and transfers.
-    var s = 0x00;
+    var s: Byte = 0x00;
 
     // Processor Status:
     // This 8-bit register stores the state of the processor. The bits in
@@ -32,5 +32,13 @@ class CpuRegisters {
     // can use the branch instructions. Setting the flags is possible by
     // pulling the P register from stack or by using the flag set or
     // clear instructions.
-    var p = 0x00;
+    //var p = 0x00;
+
+    var carryFlag: Boolean = false;
+    var zeroFlag: Boolean = false;
+    var interruptDisable: Boolean = false;
+    var decimalMode: Boolean = false;
+    var breakCommand: Boolean = false;
+    var overflowFlag: Boolean = false;
+    var negativeFlag: Boolean = false;
 }

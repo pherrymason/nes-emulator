@@ -5,5 +5,5 @@ fun main() {
 
     val nes = Nes()
 
-    nes.start()
+    nes.run()
 }
