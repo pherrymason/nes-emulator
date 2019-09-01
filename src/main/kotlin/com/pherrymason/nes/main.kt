@@ -1,4 +1,4 @@
-package com.pherrmason.nes
+package com.pherrymason.nes
 
 fun main() {
     println("Nintendo");
