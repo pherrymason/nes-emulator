@@ -76,7 +76,7 @@ enum class AddressingMode {
     // this value to generated the actual target address for operation.
 
     // The second byte of the instruction points to a memory location in page zero.
-    // The contents of this memory location are added to the contents of index regsiter Y.
+    // The contents of this memory location are added to the contents of index register Y.
     // The result is the low order byte of the effective address.
     // The carry from this addition is added to the contents of the next page zero memory location to form
     // the high order byte of the effective address.

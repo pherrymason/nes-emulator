@@ -23,7 +23,15 @@ class CpuAddressingModeTest {
 
         ram.write(Address(104), Byte(0x53))
         ram.write(Address(105), Byte(0x01))
+
+        // Pointer's table out of Page Zero ------------
+        ram.write(Address(246), Byte(246))
+        ram.write(Address(247), Byte(247))
+
         // End of pointer's table ----------------------
+
+        ram.write(Address(256), Byte(0x77))
+        ram.write(Address(257), Byte(0x10))
     }
 
     fun signedToUnsigned(signedValue: Int): Byte {
@@ -212,11 +220,23 @@ class CpuAddressingModeTest {
     }
 
     @Test
+    fun decodePreIndexedIndirectOverflows() {
+        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), Byte(246))
+        cpu.registers.storeX(Byte(110))   // 246 + 110 will effectively point to 100
+
+        val pc = ProgramCounter(0)
+        val address = this.cpu.decodeOperationAddress(pc, instruction)
+
+        assertEquals(Address(0x0150), address)
+    }
+
+    @Test
     fun decodePostIndirectIndexed() {
         val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), Byte(104))
-        ram.write(Address(2), Byte(0))
         cpu.registers.storeY(Byte(0))
 
         val pc = ProgramCounter(0)
@@ -224,51 +244,17 @@ class CpuAddressingModeTest {
 
         assertEquals(Address(0x0153), address)
     }
-/*
-    @Test
-    fun decodeZeroPageXIndexed() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
-        this.cpu.registers.storeX(Byte(1))
-        val value = this.cpu.decodeOperationAddress(Address(0), instruction)
 
-        // value at @1 = 11
-        // 11 + X = 12
-        // value at @12 = 0x03
-        assertEquals(value, ram.read(12))
+    @Test
+    fun decodePostIndirectIndexedCrossingPage() {
+        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), Byte(246))
+        cpu.registers.storeY(Byte(10))
+
+        val pc = ProgramCounter(0)
+        val address = this.cpu.decodeOperationAddress(pc, instruction)
+
+        assertEquals(Address(0x100), address)
     }
-
-    @Test
-    fun decodeZeroPageXIndexedOverflows() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
-        this.cpu.registers.storeX(Byte(127))
-        val value = this.cpu.decodeOperationAddress(Address(100), instruction)
-
-        // value at @101 = 255
-        // 255 + X = 510 => 0xFFE -> 0xFE
-        // value at @FE(254) = 0x66
-        assertEquals(value, ram.read(254))
-    }
-    @Test
-    fun decodeZeroPageYIndexed() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageY)
-        this.cpu.registers.storeY(Byte(1))
-        val value = this.cpu.decodeOperationAddress(Address(0), instruction)
-
-        // value at @1 = 11
-        // 11 + X = 12
-        // value at @12 = 0x03
-        assertEquals(value, ram.read(12))
-    }
-
-    @Test
-    fun decodeZeroPageYIndexedOverflows() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageY)
-        this.cpu.registers.storeY(Byte(127))
-        val value = this.cpu.decodeOperationAddress(Address(100), instruction)
-
-        // value at @101 = 255
-        // 255 + X = 510 => 0xFFE -> 0xFE
-        // value at @FE(254) = 0x66
-        assertEquals(value, ram.read(254), "Evaluated address does not equals to ram[254]")
-    }*/
 }

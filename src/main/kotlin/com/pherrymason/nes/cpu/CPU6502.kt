@@ -203,7 +203,8 @@ class CPU6502 (private var ram: RAM){
             AddressingMode.PreIndexedIndirect -> {
                 // 6 cycles
                 // 2 bytes
-                val pageZeroAddressLO = (read(programCounter + 1) + this.registers.x) and 0xFF
+                val arg = read(programCounter + 1)
+                val pageZeroAddressLO = (arg + this.registers.x) and 0xFF
 
                 val lo = read(Address(pageZeroAddressLO, Byte(0x00)))
                 val hi = read(Address(pageZeroAddressLO + 1, Byte(0x00)))
@@ -213,10 +214,10 @@ class CPU6502 (private var ram: RAM){
 
             AddressingMode.PostIndexedIndirect -> {
                 // 5+ cycles
-                val pageZeroAddressLO = read(programCounter + 1)
+                val arg = read(programCounter + 1)
 
-                val lo = read(Address(pageZeroAddressLO, Byte(0))) + registers.y
-                val hi = read(Address(pageZeroAddressLO + 1, Byte(0))) + registers.y
+                val lo = read(Address(arg, Byte(0))) + registers.y
+                val hi = read(Address(arg + 1, Byte(0))) + registers.y
 
                 return Address(lo, hi)
             }
