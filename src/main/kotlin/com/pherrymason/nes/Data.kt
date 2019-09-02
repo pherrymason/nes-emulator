@@ -50,7 +50,7 @@ data class Word constructor(val word: UShort) {
         return Word(this.word.toInt() and other)
     }
 
-    infix operator fun minus(other: Int): Word = Word(word.minus(other.toUInt()).toInt())
+    infix operator fun minus(other: Int): Word = Word(word.toShort().minus(other).toUShort())
 
     infix operator fun plus(other: Int): Word {
         return Word(this.word.toShort().plus(other).toUShort())

@@ -201,25 +201,24 @@ class CPU6502 (private var ram: RAM){
             }
 
             AddressingMode.PreIndexedIndirect -> {
+                // 6 cycles
                 // 2 bytes
-                //val indirectAddress = (this.ram[programCounter + 1] + this.registers.x).and(0xFF)
+                val pageZeroAddressLO = (read(programCounter + 1) + this.registers.x) and 0xFF
 
-                // The address (2 bytes) stored in indirectAddress contains the final address
-                //val address = this.readAddressAt(indirectAddress)
-                //value = this.ram[address]
-
-                val t = read(programCounter)
-                val lo = read(t.plus(this.registers.x).toWord().and(0x00FF))
-                val hi = read(t.plus(this.registers.x).plus(1).toWord().and(0x00FF))
+                val lo = read(Address(pageZeroAddressLO, Byte(0x00)))
+                val hi = read(Address(pageZeroAddressLO + 1, Byte(0x00)))
 
                 return Address(lo, hi)
             }
 
             AddressingMode.PostIndexedIndirect -> {
-                val address = this.evalPointer(programCounter + 1);
+                // 5+ cycles
+                val pageZeroAddressLO = read(programCounter + 1)
 
-                //address.plus(this.registers.y)
-                this.ram.read(address)
+                val lo = read(Address(pageZeroAddressLO, Byte(0))) + registers.y
+                val hi = read(Address(pageZeroAddressLO + 1, Byte(0))) + registers.y
+
+                return Address(lo, hi)
             }
 
             AddressingMode.Relative -> {

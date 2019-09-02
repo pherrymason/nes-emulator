@@ -68,6 +68,18 @@ enum class Instruction constructor(val opcode: Byte, val instruction: Instructio
         Byte(0x90),
         InstructionCode.BCC,
         AddressingMode.Relative
+    ),
+
+    JumpAbsolute(
+        Byte(0x4C),
+        InstructionCode.JMP,
+        AddressingMode.Absolute
+    ),
+
+    JumpIndirect(
+        Byte(0x6C),
+        InstructionCode.JMP,
+        AddressingMode.Indirect
     );
 
     companion object {
