@@ -1,15 +1,16 @@
 package com.pherrymason.nes
 
 import kotlin.Byte as OriginalByte
+
 @ExperimentalUnsignedTypes
 class Byte constructor(val byte: UByte) {
     constructor(other: Int) : this(other.toUByte())
 
     infix operator fun plus(other: Byte): Byte = Byte(byte.plus(other.byte).toUByte())
-    infix operator fun plus(other: Int): Byte = Byte(this.byte.plus(other.toUByte()).toUByte())
-    infix operator fun minus(other: Int): Byte = Byte(byte.minus(other.toUShort()).toUByte())
+    infix operator fun plus(other: Int): Byte = Byte(this.byte.plus(other.toUInt()).toUByte())
+    infix operator fun minus(other: Int): Byte = Byte(byte.minus(other.toUInt()).toUByte())
 
-    infix fun and(other: Int): Byte  = Byte(byte.toInt().and(other).toUByte())
+    infix fun and(other: Int): Byte = Byte(byte.toInt().and(other))
 
     fun toWord(): Word {
         return Word(this.byte.toUShort())
@@ -24,13 +25,13 @@ class Byte constructor(val byte: UByte) {
     }
 
     infix operator fun compareTo(other: Byte): Int = byte.compareTo(other.byte)
-    infix operator fun compareTo(other: Int): Int = byte.compareTo(other.toUShort())
+    infix operator fun compareTo(other: Int): Int = byte.compareTo(other.toUByte())
 }
 
 @ExperimentalUnsignedTypes
 data class Word constructor(val word: UShort) {
     constructor(lo: Byte, hi: Byte) : this(hi.toInt().shl(8).or(lo.toInt()))
-    constructor(lo: Byte, hi: Int) :  this(hi.shl(8).or(lo.toInt()))
+    constructor(lo: Byte, hi: Int) : this(hi.shl(8).or(lo.toInt()))
     constructor(word: Int) : this(word.toUShort())
 
     fun shl(bitCount: Int): Word {
@@ -49,15 +50,19 @@ data class Word constructor(val word: UShort) {
         return Word(this.word.toInt() and other)
     }
 
+    infix operator fun minus(other: Int): Word = Word(word.minus(other.toUInt()).toInt())
+
     infix operator fun plus(other: Int): Word {
-        return Word( this.word.plus(other.toUShort()).toUShort() )
+        return Word(this.word.toShort().plus(other).toUShort())
     }
 
     infix operator fun plus(other: Byte): Word {
-        return Word(this.word.plus(other.toUShort()).toUShort())
+        return Word(this.word.toShort().plus(other.byte.toByte()))
     }
 }
 
 @ExperimentalUnsignedTypes
 typealias Address = Word
+
+@ExperimentalUnsignedTypes
 typealias ProgramCounter = Word

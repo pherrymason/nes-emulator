@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 @ExperimentalUnsignedTypes
 class CpuAddressingModeTest {
     var ram = RAM()
-    var cpu = Cpu(ram)
+    var cpu = CPU6502(ram)
 
     init {
         // Fill cpu memory with data: 0-9 raw values
@@ -20,31 +20,53 @@ class CpuAddressingModeTest {
 
         // OPCode with absolute mode
         var instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.Immediate)
-        ram.write(Address(50), Byte(instruction.opcode))
+        ram.write(Address(50), instruction.opcode)
         ram.write(Address(51), Byte(0x50))
         ram.write(Address(52), Byte(0x10))
 
         // OPCode with ZeroPage
         instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPage)
-        ram.write(Address(53), Byte(instruction.opcode))
+        ram.write(Address(53), instruction.opcode)
         ram.write(Address(54), Byte(0x50))
 
         // OPCode with ZeroPageX
         instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
-        ram.write(Address(55), Byte(instruction.opcode))
+        ram.write(Address(55), instruction.opcode)
         ram.write(Address(56), Byte(0x50))
 
         // OPCode with AbsoluteXIndexed
         instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteXIndexed)
-        ram.write(Address(57), Byte(instruction.opcode))
+        ram.write(Address(57), instruction.opcode)
         ram.write(Address(58), Byte(0x50))
         ram.write(Address(59), Byte(0x10))
 
         // OPCode with AbsoluteYIndexed
         instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteYIndexed)
-        ram.write(Address(60), Byte(instruction.opcode))
+        ram.write(Address(60), instruction.opcode)
         ram.write(Address(61), Byte(0x50))
         ram.write(Address(62), Byte(0x10))
+
+        // OPCode with relative +1
+        instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+        ram.write(Address(63), instruction.opcode)
+        ram.write(Address(64), signedToUnsigned(1))
+
+        // OPCode with relative -1
+        instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+        ram.write(Address(65), instruction.opcode)
+        ram.write(Address(66), signedToUnsigned(-1))
+
+        ram.write(Address(70), Byte(0xFF))
+
+        // OPCode with relative 0
+        instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+        ram.write(Address(67), instruction.opcode)
+        ram.write(Address(68), signedToUnsigned(0))
+
+    }
+
+    fun signedToUnsigned(signedValue: Int): Byte {
+        return Byte(signedValue + 128);
     }
 
     @Test
@@ -87,7 +109,7 @@ class CpuAddressingModeTest {
     @Test
     fun decodeZeroPageXWithOverflow() {
         var instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
-        ram.write(Address(53), Byte(instruction.opcode))
+        ram.write(Address(53), instruction.opcode)
         ram.write(Address(54), Byte(0xFF))
 
         this.cpu.registers.storeX(Byte(1))
@@ -111,7 +133,7 @@ class CpuAddressingModeTest {
     @Test
     fun decodeZeroPageYWithOverflow() {
         var instruction = Instruction.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
-        ram.write(Address(53), Byte(instruction.opcode))
+        ram.write(Address(53), instruction.opcode)
         ram.write(Address(54), Byte(0xFF))
 
         this.cpu.registers.storeY(Byte(1))
@@ -143,6 +165,38 @@ class CpuAddressingModeTest {
 
         assertEquals(Address(0x1051), address)
     }
+
+    @Test
+    fun decodeRelative() {
+        val instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+
+        val pc = ProgramCounter(63)
+        val address = this.cpu.decodeOperationAddress(pc, instruction)
+
+        assertEquals(pc.plus(1), address)
+    }
+
+    @Test
+    fun decodeRelativeNeutral() {
+        val instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+
+        val pc = ProgramCounter(67)
+        val address = this.cpu.decodeOperationAddress(pc, instruction)
+
+        assertEquals(pc, address)
+    }
+
+    @Test
+    fun decodeRelativeNegative() {
+        val instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+
+        val pc = ProgramCounter(65)
+        val address = this.cpu.decodeOperationAddress(pc, instruction)
+
+        assertEquals(pc.minus(1), address)
+    }
+
+
 /*
     @Test
     fun decodeZeroPageXIndexed() {

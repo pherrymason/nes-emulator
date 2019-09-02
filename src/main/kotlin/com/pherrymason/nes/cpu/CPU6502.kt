@@ -11,7 +11,7 @@ import com.pherrymason.nes.RAM
  * (1.66 MHz in a PAL NES)
  */
 @ExperimentalUnsignedTypes
-class Cpu (private var ram: RAM){
+class CPU6502 (private var ram: RAM){
     public val registers = CpuRegisters();
 
     // Memory
@@ -223,10 +223,10 @@ class Cpu (private var ram: RAM){
             }
 
             AddressingMode.Relative -> {
-                var relative = this.ram.read(programCounter)
-                if (relative > 0x7F) {
-                    relative = relative.minus(127).plus(-1)
-                }
+                var relative = this.ram.read(programCounter + 1)
+                relative = relative.minus(128)
+
+                return programCounter.plus(relative)
             }
             else -> {
                 //AddressingMode.Accumulator ->

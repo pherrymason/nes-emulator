@@ -45,7 +45,7 @@ enum class AddressingMode {
     // Used only with branch instructions and establishes a destination for the conditional branch.
     // The second byte of the instruction is an operand. This operand is an offset which is added to
     // the program counter when the counter is set the next instruction.
-    // The range of the offset is 1 byte signed (-128 to +127)
+    // The range of the offset is 1 byte signed (-128 to +127)/()
     Relative,
 
     // The instruction contains a 16 bit address which identifies the location of the least significant byte of

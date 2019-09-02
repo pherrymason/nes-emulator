@@ -1,5 +1,7 @@
 package com.pherrymason.nes.cpu
 
+import com.pherrymason.nes.Byte
+
 enum class InstructionCode {
     ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE,
     BPL, BRK, BVC, BVS, CLC, CLD, CLI, CLV, CMP,
@@ -11,47 +13,61 @@ enum class InstructionCode {
 }
 
 @ExperimentalUnsignedTypes
-enum class Instruction constructor(val opcode: UByte, val instruction: InstructionCode,
+enum class Instruction constructor(val opcode: Byte, val instruction: InstructionCode,
                                    val mode: AddressingMode
 ) {
     // Add with Carry (ADC)
-    AddwithCarry_Immediate(0x69u,
+    AddwithCarry_Immediate(
+        Byte(0x69),
         InstructionCode.ADC,
         AddressingMode.Immediate
     ),
-    AddWithCarry_ZeroPage(0x65u,
+    AddWithCarry_ZeroPage(
+        Byte(0x65),
         InstructionCode.ADC,
         AddressingMode.ZeroPage
     ),
-    AddWithCarry_ZeroPageIndexed(0x75u,
+    AddWithCarry_ZeroPageIndexed(
+        Byte(0x75),
         InstructionCode.ADC,
         AddressingMode.ZeroPageX
     ),
-    AddWithCarry_Absolute(0x6Du,
+    AddWithCarry_Absolute(
+        Byte(0x6D),
         InstructionCode.ADC,
         AddressingMode.Absolute
     ),
-    AddWithCarry_AbsoluteX(0x7Du,
+    AddWithCarry_AbsoluteX(
+        Byte(0x7D),
         InstructionCode.ADC,
         AddressingMode.AbsoluteXIndexed
     ),
-    AddWithCarry_AbsoluteY(0x79u,
+    AddWithCarry_AbsoluteY(
+        Byte(0x79),
         InstructionCode.ADC,
         AddressingMode.AbsoluteYIndexed
     ),
-    AddWithCarry_IndirectX(0x61u,
+    AddWithCarry_IndirectX(
+        Byte(0x61),
         InstructionCode.ADC,
         AddressingMode.PreIndexedIndirect
     ),
-    AddWithCarry_IndirectY(0x71u,
+    AddWithCarry_IndirectY(
+        Byte(0x71),
         InstructionCode.ADC,
         AddressingMode.PostIndexedIndirect
     ),
 
-
-    LoadXRegister_ZeroPageIndexed(0xB6u,
+    LoadXRegister_ZeroPageIndexed(
+        Byte(0xB6),
         InstructionCode.LDX,
         AddressingMode.ZeroPageY
+    ),
+
+    Branchifcarryflagclear(
+        Byte(0x90),
+        InstructionCode.BCC,
+        AddressingMode.Relative
     );
 
     companion object {
