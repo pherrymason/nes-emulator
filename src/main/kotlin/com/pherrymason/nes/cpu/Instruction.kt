@@ -68,6 +68,12 @@ enum class Instruction constructor(val opcode: NesByte, val instruction: Instruc
         AddressingMode.PostIndexedIndirect
     ),
 
+    ForceBreak(
+        NesByte(0x00),
+        InstructionCode.BRK,
+        AddressingMode.Implied
+    ),
+
     LoadXRegister_ZeroPageIndexed(
         NesByte(0xB6),
         InstructionCode.LDX,
