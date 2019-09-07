@@ -22,8 +22,8 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x8F)
         cpu.clock()
 
-        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.Z), false)
-        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.N), true)
+        assertEquals(cpu.registers.ps.zeroFlag, false)
+        assertEquals(cpu.registers.ps.negativeFlag, true)
         assertEquals(cpu.registers.a.byte, NesByte(0x8F).byte, "acumulator failed")
 
         // --------------------------------------------------
@@ -32,8 +32,8 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x70)
         cpu.clock()
 
-        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.Z), true)
-        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.N), false)
+        assertEquals(cpu.registers.ps.zeroFlag, true)
+        assertEquals(cpu.registers.ps.negativeFlag, false)
         assertEquals(cpu.registers.a.byte, NesByte(0x00).byte)
 
         // --------------------------------------------------
@@ -42,8 +42,8 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x8F)
         cpu.clock()
 
-        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.Z), false)
-        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.N), true)
+        assertEquals(cpu.registers.ps.zeroFlag, false)
+        assertEquals(cpu.registers.ps.negativeFlag, true)
         assertEquals(cpu.registers.a.byte, NesByte(0x8F).byte)
     }
 
