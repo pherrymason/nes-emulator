@@ -1,24 +1,22 @@
 package com.pherrymason.nes
 
-import com.pherrymason.nes.Byte
-
 @ExperimentalUnsignedTypes
 class RAM {
-    val memory: MutableMap<Address, Byte> = mutableMapOf()
+    val memory: MutableMap<Address, NesByte> = mutableMapOf()
 
-    fun read(address: Address): Byte {
-        return memory.getOrDefault(address, Byte(0x00))
+    fun read(address: Address): NesByte {
+        return memory.getOrDefault(address, NesByte(0x00))
     }
 
-    fun read(address: Int): Byte {
-        return memory.getOrDefault(Address(address), Byte(0x00))
+    fun read(address: Int): NesByte {
+        return memory.getOrDefault(Address(address), NesByte(0x00))
     }
 
-    fun write(address: Address, value: Byte) {
+    fun write(address: Address, value: NesByte) {
         memory[address] = value
     }
 
     fun write(address: Int, value: Int) {
-        memory[Address(address)] = Byte(value)
+        memory[Address(address)] = NesByte(value)
     }
 }

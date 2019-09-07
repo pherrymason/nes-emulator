@@ -1,6 +1,6 @@
 package com.pherrymason.nes.cpu
 
-import com.pherrymason.nes.Byte
+import com.pherrymason.nes.NesByte
 
 enum class InstructionCode {
     ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE,
@@ -13,79 +13,93 @@ enum class InstructionCode {
 }
 
 @ExperimentalUnsignedTypes
-enum class Instruction constructor(val opcode: Byte, val instruction: InstructionCode,
+enum class Instruction constructor(val opcode: NesByte, val instruction: InstructionCode,
                                    val mode: AddressingMode
 ) {
+    // AND
+    And_Immediate(NesByte(0x29), InstructionCode.AND, AddressingMode.Immediate),
+    And_ZeroPage(NesByte(0x25), InstructionCode.AND, AddressingMode.ZeroPage),
+    And_ZeroPageX(NesByte(0x35), InstructionCode.AND, AddressingMode.ZeroPageX),
+    And_Absolute(NesByte(0x2D), InstructionCode.AND, AddressingMode.Absolute),
+    And_AbsoluteX(NesByte(0x3D), InstructionCode.AND, AddressingMode.AbsoluteXIndexed),
+    And_AbsoluteY(NesByte(0x39), InstructionCode.AND, AddressingMode.AbsoluteYIndexed),
+    And_IndirectX(NesByte(0x21), InstructionCode.AND, AddressingMode.PostIndexedIndirect),
+    And_IndirectY(NesByte(0x31), InstructionCode.AND, AddressingMode.PreIndexedIndirect),
+
     // Add with Carry (ADC)
     AddwithCarry_Immediate(
-        Byte(0x69),
+        NesByte(0x69),
         InstructionCode.ADC,
         AddressingMode.Immediate
     ),
     AddWithCarry_ZeroPage(
-        Byte(0x65),
+        NesByte(0x65),
         InstructionCode.ADC,
         AddressingMode.ZeroPage
     ),
     AddWithCarry_ZeroPageIndexed(
-        Byte(0x75),
+        NesByte(0x75),
         InstructionCode.ADC,
         AddressingMode.ZeroPageX
     ),
     AddWithCarry_Absolute(
-        Byte(0x6D),
+        NesByte(0x6D),
         InstructionCode.ADC,
         AddressingMode.Absolute
     ),
     AddWithCarry_AbsoluteX(
-        Byte(0x7D),
+        NesByte(0x7D),
         InstructionCode.ADC,
         AddressingMode.AbsoluteXIndexed
     ),
     AddWithCarry_AbsoluteY(
-        Byte(0x79),
+        NesByte(0x79),
         InstructionCode.ADC,
         AddressingMode.AbsoluteYIndexed
     ),
     AddWithCarry_IndirectX(
-        Byte(0x61),
+        NesByte(0x61),
         InstructionCode.ADC,
         AddressingMode.PreIndexedIndirect
     ),
     AddWithCarry_IndirectY(
-        Byte(0x71),
+        NesByte(0x71),
         InstructionCode.ADC,
         AddressingMode.PostIndexedIndirect
     ),
 
     LoadXRegister_ZeroPageIndexed(
-        Byte(0xB6),
+        NesByte(0xB6),
         InstructionCode.LDX,
         AddressingMode.ZeroPageY
     ),
 
     Branchifcarryflagclear(
-        Byte(0x90),
+        NesByte(0x90),
         InstructionCode.BCC,
         AddressingMode.Relative
     ),
 
     JumpAbsolute(
-        Byte(0x4C),
+        NesByte(0x4C),
         InstructionCode.JMP,
         AddressingMode.Absolute
     ),
 
     JumpIndirect(
-        Byte(0x6C),
+        NesByte(0x6C),
         InstructionCode.JMP,
         AddressingMode.Indirect
     );
 
     companion object {
         fun fromInstructionCode(code: InstructionCode, mode: AddressingMode): Instruction {
-            return values().first { it.instruction == code && it.mode == mode }
+            return values().first {
+                it.instruction == code && it.mode == mode
+            }
         }
-        fun fromMemory(pc: Any): Instruction = values().first { it.opcode == pc }
+        fun fromMemory(value: NesByte): Instruction = values().first {
+            it.opcode == value
+        }
     }
 }

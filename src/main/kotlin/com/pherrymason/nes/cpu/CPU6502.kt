@@ -2,7 +2,7 @@ package com.pherrymason.nes.cpu
 
 import com.pherrymason.nes.Address
 import com.pherrymason.nes.cpu.InstructionCode.*
-import com.pherrymason.nes.Byte
+import com.pherrymason.nes.NesByte
 import com.pherrymason.nes.ProgramCounter
 import com.pherrymason.nes.RAM
 
@@ -20,25 +20,28 @@ class CPU6502 (private var ram: RAM){
     fun reset() {
         this.registers.reset()
 
-        for (address in 1..0xFFFF) {
-            ram.write(Address(address), Byte(0x00))
-        }
+//        for (address in 1..0xFFFF) {
+//            ram.write(Address(address), Byte(0x00))
+//        }
     }
 
     fun clock() {
         //val data = fetchMemory(this.pc)
-        val instruction = Instruction.fromMemory(this.registers.pc)
+        val instruction = Instruction.fromMemory(read(this.registers.pc))
         val address = this.decodeOperationAddress(this.registers.pc, instruction)
-        exe(instruction);
+        val operator = read(address)
+        exe(instruction, operator);
     }
 
-    fun exe(instruction: Instruction) {
+    fun exe(instruction: Instruction, operator: NesByte) {
         when (instruction.instruction) {
-            ADC -> {
-                var value = decodeOperationAddress(this.registers.pc, instruction)
+            ADC -> toImplement(instruction)
+            AND -> {
+                val result = registers.a and operator
+                registers.setNegativeFlag(result)
+                registers.setZeroFlag(result)
+                registers.a = result
             }
-
-            AND -> toImplement(instruction);
             ASL -> toImplement(instruction);
             BCC -> toImplement(instruction);
             BCS -> toImplement(instruction);
@@ -97,7 +100,7 @@ class CPU6502 (private var ram: RAM){
     }
 
     fun decodeOperationAddress(programCounter: ProgramCounter, instruction: Instruction): Address {
-        val valor: Byte;
+        val valor: NesByte;
         when (instruction.mode) {
             AddressingMode.Immediate -> {
                 // 2 bytes
@@ -110,7 +113,7 @@ class CPU6502 (private var ram: RAM){
                 //val address = this.ram[(programCounter + 1u).toInt()];
                 //value = this.ram[address.toInt()]
                 val lo = this.ram.read(programCounter + 1)
-                return Address(lo, Byte(0x00))
+                return Address(lo, NesByte(0x00))
             }
 
             AddressingMode.ZeroPageX -> {
@@ -133,7 +136,10 @@ class CPU6502 (private var ram: RAM){
                 // 3 bytes
                 //val address = this.readAddressAt(programCounter + 1)
                 //value = this.ram[address]
-                return evalPointer(programCounter + 1)
+                val lo = this.ram.read(programCounter + 1)
+                val hi = this.ram.read(programCounter + 2)
+
+                return Address(lo, hi)
             }
 
             AddressingMode.AbsoluteXIndexed -> {
@@ -185,7 +191,7 @@ class CPU6502 (private var ram: RAM){
                 val ptr_hi = this.ram.read(programCounter + 2)
                 val ptr_address = Address(ptr_lo, ptr_hi)
 
-                if (ptr_lo == Byte(0xFF)) {
+                if (ptr_lo == NesByte(0xFF)) {
                     // Simulate page boundary hardware bug
                     val fixHi = ptr_address.and(0xFF00).shl(8)
                     val lo = read(fixHi)
@@ -206,8 +212,8 @@ class CPU6502 (private var ram: RAM){
                 val arg = read(programCounter + 1)
                 val pageZeroAddressLO = (arg + this.registers.x) and 0xFF
 
-                val lo = read(Address(pageZeroAddressLO, Byte(0x00)))
-                val hi = read(Address(pageZeroAddressLO + 1, Byte(0x00)))
+                val lo = read(Address(pageZeroAddressLO, NesByte(0x00)))
+                val hi = read(Address(pageZeroAddressLO + 1, NesByte(0x00)))
 
                 return Address(lo, hi)
             }
@@ -215,11 +221,13 @@ class CPU6502 (private var ram: RAM){
             AddressingMode.PostIndexedIndirect -> {
                 // 5+ cycles
                 val arg = read(programCounter + 1)
+                val lo = read(Address(arg, NesByte(0)))
+                val hi = read(Address(arg + 1 and 0xFF, NesByte(0)))
 
-                val lo = read(Address(arg, Byte(0))) + registers.y
-                val hi = read(Address(arg + 1, Byte(0))) + registers.y
+                var address = Address(lo,hi)
+                address = address.plus(registers.y)
 
-                return Address(lo, hi)
+                return address
             }
 
             AddressingMode.Relative -> {
@@ -237,15 +245,7 @@ class CPU6502 (private var ram: RAM){
         return Address(0)
     }
 
-    fun evalPointer(address: Address): Address {
-        // return this.ram[address] + this.ram[address + 1].toInt().shl(8)
-        val lo = this.ram.read(address)
-        val hi = this.ram.read(address + 1)
-
-        return Address(lo, hi)
-    }
-
-    fun read(address: Address): Byte {
+    fun read(address: Address): NesByte {
         return this.ram.read(address)
     }
 

@@ -1,6 +1,6 @@
 package com.pherrymason.nes.cpu
 
-import com.pherrymason.nes.Byte
+import com.pherrymason.nes.NesByte
 import com.pherrymason.nes.Word
 
 @ExperimentalUnsignedTypes
@@ -8,13 +8,13 @@ class CpuRegisters {
     // Accumulator
     // and along with the arithmetic logic unit (ALU), supports using the status register for carrying, overflow
     // detection, and so on.
-    var a: Byte = Byte(0x00);
+    var a: NesByte = NesByte(0x00);
 
     // Indexes X Y
     // used for several addressing modes. They can be used as loop counters easily, using INC/DEC and branch
     // instructions. Not being the accumulator, they have limited addressing modes themselves when loading and saving.
-    var x: Byte = Byte(0x00);
-    var y: Byte = Byte(0x00);
+    var x: NesByte = NesByte(0x00);
+    var y: NesByte = NesByte(0x00);
 
     // Program Counter:
     // supports 65536 direct (unbanked) memory locations, however not all values are sent to the cartridge.
@@ -24,7 +24,7 @@ class CpuRegisters {
 
     // Stack Pointer:
     // can be accessed using interrupts, pulls, pushes, and transfers.
-    var s: Byte = Byte(0x00);
+    var s: NesByte = NesByte(0x00);
 
     // Processor Status:
     // This 8-bit register stores the state of the processor. The bits in
@@ -47,15 +47,25 @@ class CpuRegisters {
     var negativeFlag: Boolean = false;
 
     fun reset() {
-        this.x = Byte(0)
-        this.y = Byte(0)
+        this.x = NesByte(0)
+        this.y = NesByte(0)
     }
 
-    public fun storeX(x: Byte) {
+    public fun storeX(x: NesByte) {
         this.x = x
     }
 
-    public fun storeY(y: Byte) {
+    public fun storeY(y: NesByte) {
         this.y = y
+    }
+
+    fun setNegativeFlag(value: NesByte) {
+        val flag = (value and NesByte(0x80)).toBool()
+        this.negativeFlag = flag
+    }
+
+    fun setZeroFlag(value: NesByte) {
+        val result = value == NesByte(0)
+        this.zeroFlag = result
     }
 }

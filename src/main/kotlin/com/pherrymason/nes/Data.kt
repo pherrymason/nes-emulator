@@ -1,16 +1,19 @@
 package com.pherrymason.nes
 
-import kotlin.Byte as OriginalByte
-
 @ExperimentalUnsignedTypes
-class Byte constructor(val byte: UByte) {
+data class NesByte constructor(val byte: UByte) {
     constructor(other: Int) : this(other.toUByte())
 
-    infix operator fun plus(other: Byte): Byte = Byte(byte.plus(other.byte).toUByte())
-    infix operator fun plus(other: Int): Byte = Byte(this.byte.plus(other.toUInt()).toUByte())
-    infix operator fun minus(other: Int): Byte = Byte(byte.minus(other.toUInt()).toUByte())
+    infix operator fun plus(other: NesByte): NesByte = NesByte(byte.plus(other.byte).toUByte())
+    infix operator fun plus(other: Int): NesByte = NesByte(this.byte.plus(other.toUInt()).toUByte())
+    infix operator fun minus(other: Int): NesByte = NesByte(byte.minus(other.toUInt()).toUByte())
 
-    infix fun and(other: Int): Byte = Byte(byte.toInt().and(other))
+    infix fun and(other: Int): NesByte = NesByte(byte.toInt().and(other))
+    infix fun and(other: NesByte): NesByte {
+        val value = NesByte(byte.and(other.byte))
+
+        return value;
+    }
 
     fun toWord(): Word {
         return Word(this.byte.toUShort())
@@ -24,14 +27,35 @@ class Byte constructor(val byte: UByte) {
         return this.byte.toInt()
     }
 
-    infix operator fun compareTo(other: Byte): Int = byte.compareTo(other.byte)
-    infix operator fun compareTo(other: Int): Int = byte.compareTo(other.toUByte())
+    infix operator fun compareTo(other: NesByte): Int {
+        return byte.compareTo(other.byte)
+    }
+
+    infix operator fun compareTo(other: Int): Int {
+        return byte.compareTo(other.toUByte())
+    }
+    override infix operator fun equals(other: Any?): Boolean {
+        val hashA = byte.hashCode()
+        val hashB = other.hashCode()
+        return hashA == hashB
+    }
+
+    fun toBool(): Boolean {
+        return byte != 0u.toUByte()
+    }
+/*
+
+    override fun hashCode(): Int {
+        val hash = byte.toInt()
+
+        return hash
+    }*/
 }
 
 @ExperimentalUnsignedTypes
 data class Word constructor(val word: UShort) {
-    constructor(lo: Byte, hi: Byte) : this(hi.toInt().shl(8).or(lo.toInt()))
-    constructor(lo: Byte, hi: Int) : this(hi.shl(8).or(lo.toInt()))
+    constructor(lo: NesByte, hi: NesByte) : this(hi.toInt().shl(8).or(lo.toInt()))
+    constructor(lo: NesByte, hi: Int) : this(hi.shl(8).or(lo.toInt()))
     constructor(word: Int) : this(word.toUShort())
 
     fun shl(bitCount: Int): Word {
@@ -56,7 +80,7 @@ data class Word constructor(val word: UShort) {
         return Word(this.word.toShort().plus(other).toUShort())
     }
 
-    infix operator fun plus(other: Byte): Word {
+    infix operator fun plus(other: NesByte): Word {
         return Word(this.word.toShort().plus(other.byte.toByte()))
     }
 }
