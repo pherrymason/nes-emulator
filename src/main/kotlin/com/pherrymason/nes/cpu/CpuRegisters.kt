@@ -3,6 +3,8 @@ package com.pherrymason.nes.cpu
 import com.pherrymason.nes.NesByte
 import com.pherrymason.nes.Word
 
+
+
 @ExperimentalUnsignedTypes
 class CpuRegisters {
     // Accumulator
@@ -37,35 +39,80 @@ class CpuRegisters {
     // pulling the P register from stack or by using the flag set or
     // clear instructions.
     //var p = 0x00;
-
-    var carryFlag: Boolean = false;
-    var zeroFlag: Boolean = false;
-    var interruptDisable: Boolean = false;
-    var decimalMode: Boolean = false;
-    var breakCommand: Boolean = false;
-    var overflowFlag: Boolean = false;
-    var negativeFlag: Boolean = false;
+    var ps = NesByte(0x00)
+    enum class Flag{
+        C, // Carry Bit             0
+        Z, // Zero Flag             1
+        I, // Interrupt Disable     2
+        D, // Decimal mode          3
+        B, // Break command         4
+        U, // Unused                5
+        V, // Overflow              6
+        N, // Negative              7
+    }
 
     fun reset() {
+        this.pc = Word(0)
         this.x = NesByte(0)
         this.y = NesByte(0)
     }
 
-    public fun storeX(x: NesByte) {
+    fun storeX(x: NesByte) {
         this.x = x
     }
 
-    public fun storeY(y: NesByte) {
+    fun storeY(y: NesByte) {
         this.y = y
+    }
+
+    fun setFlag(flag: Flag, bit: Boolean) {
+        var shift = 0;
+        when (flag){
+            Flag.C -> shift = 0
+            Flag.Z -> shift = 1
+            Flag.I -> shift = 2
+            Flag.D -> shift = 3
+            Flag.B -> shift = 4
+            Flag.U -> shift = 5
+            Flag.V -> shift = 6
+            Flag.N -> shift = 7
+        }
+
+        val bitValue = NesByte(1).shl(shift)
+        if (bit) {
+            ps = ps.or(bitValue)
+        } else {
+            ps = ps.and(bitValue.inv())
+        }
+    }
+
+    fun getFlag(flag: Flag): Boolean {
+        var shift = 0;
+        when (flag){
+            Flag.C -> shift = 0
+            Flag.Z -> shift = 1
+            Flag.I -> shift = 2
+            Flag.D -> shift = 3
+            Flag.B -> shift = 4
+            Flag.U -> shift = 5
+            Flag.V -> shift = 6
+            Flag.N -> shift = 7
+        }
+
+        val bitValue = ps.shr(shift).and(NesByte(0x01))
+
+        return bitValue.toBool()
     }
 
     fun setNegativeFlag(value: NesByte) {
         val flag = (value and NesByte(0x80)).toBool()
-        this.negativeFlag = flag
+        setFlag(Flag.N, flag)
+        //this.negativeFlag = flag
     }
 
     fun setZeroFlag(value: NesByte) {
         val result = value == NesByte(0)
-        this.zeroFlag = result
+        //this.zeroFlag = result
+        setFlag(Flag.Z, result)
     }
 }

@@ -22,8 +22,8 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x8F)
         cpu.clock()
 
-        assertEquals(cpu.registers.zeroFlag, false)
-        assertEquals(cpu.registers.negativeFlag, true)
+        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.Z), false)
+        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.N), true)
         assertEquals(cpu.registers.a.byte, NesByte(0x8F).byte, "acumulator failed")
 
         // --------------------------------------------------
@@ -32,8 +32,8 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x70)
         cpu.clock()
 
-        assertEquals(cpu.registers.zeroFlag, true)
-        assertEquals(cpu.registers.negativeFlag, false)
+        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.Z), true)
+        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.N), false)
         assertEquals(cpu.registers.a.byte, NesByte(0x00).byte)
 
         // --------------------------------------------------
@@ -42,8 +42,16 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x8F)
         cpu.clock()
 
-        assertEquals(cpu.registers.zeroFlag, false)
-        assertEquals(cpu.registers.negativeFlag, true)
+        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.Z), false)
+        assertEquals(cpu.registers.getFlag(CpuRegisters.Flag.N), true)
         assertEquals(cpu.registers.a.byte, NesByte(0x8F).byte)
+    }
+
+    @Test
+    fun BRKTest() {
+        val instruction = Instruction.fromInstructionCode(InstructionCode.BRK, AddressingMode.Implied)
+
+        ram.write(Address(0), instruction.opcode)
+        cpu.clock()
     }
 }

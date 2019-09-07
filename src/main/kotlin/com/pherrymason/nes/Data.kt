@@ -9,10 +9,19 @@ data class NesByte constructor(val byte: UByte) {
     infix operator fun minus(other: Int): NesByte = NesByte(byte.minus(other.toUInt()).toUByte())
 
     infix fun and(other: Int): NesByte = NesByte(byte.toInt().and(other))
-    infix fun and(other: NesByte): NesByte {
-        val value = NesByte(byte.and(other.byte))
+    infix fun and(other: NesByte): NesByte = NesByte(byte.and(other.byte))
+    infix fun or(other: NesByte): NesByte = NesByte(byte.or(other.byte))
 
-        return value;
+    fun shl(bitCount: Int): NesByte {
+        return NesByte(byte.toInt().shl(bitCount))
+    }
+
+    fun shr(bitCount: Int): NesByte {
+        return NesByte(byte.toInt().shr(bitCount))
+    }
+
+    fun inv(): NesByte {
+        return NesByte(byte.inv())
     }
 
     fun toWord(): Word {
@@ -30,10 +39,10 @@ data class NesByte constructor(val byte: UByte) {
     infix operator fun compareTo(other: NesByte): Int {
         return byte.compareTo(other.byte)
     }
-
     infix operator fun compareTo(other: Int): Int {
         return byte.compareTo(other.toUByte())
     }
+
     override infix operator fun equals(other: Any?): Boolean {
         val hashA = byte.hashCode()
         val hashB = other.hashCode()
@@ -43,13 +52,6 @@ data class NesByte constructor(val byte: UByte) {
     fun toBool(): Boolean {
         return byte != 0u.toUByte()
     }
-/*
-
-    override fun hashCode(): Int {
-        val hash = byte.toInt()
-
-        return hash
-    }*/
 }
 
 @ExperimentalUnsignedTypes

@@ -26,18 +26,17 @@ class CPU6502 (private var ram: RAM){
     }
 
     fun clock() {
-        //val data = fetchMemory(this.pc)
         val instruction = Instruction.fromMemory(read(this.registers.pc))
         val address = this.decodeOperationAddress(this.registers.pc, instruction)
-        val operator = read(address)
-        exe(instruction, operator);
+        val operand = read(address)
+        exe(instruction, operand);
     }
 
-    fun exe(instruction: Instruction, operator: NesByte) {
+    fun exe(instruction: Instruction, operand: NesByte) {
         when (instruction.instruction) {
             ADC -> toImplement(instruction)
             AND -> {
-                val result = registers.a and operator
+                val result = registers.a and operand
                 registers.setNegativeFlag(result)
                 registers.setZeroFlag(result)
                 registers.a = result
@@ -50,7 +49,13 @@ class CPU6502 (private var ram: RAM){
             BMI -> toImplement(instruction);
             BNE -> toImplement(instruction);
             BPL -> toImplement(instruction);
-            BRK -> toImplement(instruction);
+            BRK -> {
+                // 7 cycles
+                // TODO advances pc +2
+                // push PorgramCounterRegister and Processor Status register to the stack
+                // set InterruptFlag
+                // Reload the Pc from the vector at 0xFFFE-0xFFFF
+            }
             BVC -> toImplement(instruction);
             BVS -> toImplement(instruction);
             CLC -> toImplement(instruction);
