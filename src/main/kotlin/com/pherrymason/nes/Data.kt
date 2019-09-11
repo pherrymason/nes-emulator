@@ -1,7 +1,7 @@
 package com.pherrymason.nes
 
 @ExperimentalUnsignedTypes
-data class NesByte constructor(val byte: UByte) {
+class NesByte constructor(val byte: UByte) {
     constructor(other: Int) : this(other.toUByte())
 
     infix operator fun plus(other: NesByte): NesByte = NesByte(byte.plus(other.byte).toUByte())
@@ -43,10 +43,9 @@ data class NesByte constructor(val byte: UByte) {
         return byte.compareTo(other.toUByte())
     }
 
-    override infix operator fun equals(other: Any?): Boolean {
-        val hashA = byte.hashCode()
-        val hashB = other.hashCode()
-        return hashA == hashB
+    override fun equals(other: Any?): Boolean {
+        if (other !is NesByte) return false
+        return byte == other.byte
     }
 
     fun toBool(): Boolean {
@@ -83,7 +82,15 @@ data class Word constructor(val word: UShort) {
     }
 
     infix operator fun plus(other: NesByte): Word {
-        return Word(this.word.toShort().plus(other.byte.toByte()))
+        return Word(word.plus(other.byte).toInt())
+    }
+
+    fun lowByte(): NesByte {
+        return NesByte(this.and(0xFF).word.toUByte())
+    }
+
+    fun highByte(): NesByte {
+        return NesByte(this.shr(8).word.toUByte())
     }
 }
 
