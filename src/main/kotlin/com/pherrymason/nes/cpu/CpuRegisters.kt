@@ -10,21 +10,22 @@ class ProcessorStatus {
     var interruptDisabled: Boolean = false
     var decimalMode: Boolean = false
     var breakCommand: Boolean = false
+    var unusedFlag: Boolean = false
     var overflowFlag: Boolean = false
     var negativeFlag: Boolean = false
 
     enum class Flag(val shift: Int){
-        C(0), // Carry Bit             0
-        Z(1), // Zero Flag             1
-        I(2), // Interrupt Disable     2
-        D(3), // Decimal mode          3
-        B(4), // Break command         4
-        U(5), // Unused                5
-        V(6), // Overflow              6
-        N(7), // Negative              7
+        C(0), // Carry Bit
+        Z(1), // Zero Flag
+        I(2), // Interrupt Disable
+        D(3), // Decimal mode
+        B(4), // Break command
+        U(5), // Unused
+        V(6), // Overflow
+        N(7), // Negative
     }
 
-    fun toNesByte(): NesByte {
+    fun dump(): NesByte {
         var ps = NesByte(0)
 
         ps = setFlag(Flag.C, carryBit, ps)
@@ -32,7 +33,7 @@ class ProcessorStatus {
         ps = setFlag(Flag.I, interruptDisabled, ps)
         ps = setFlag(Flag.D, decimalMode, ps)
         ps = setFlag(Flag.B, breakCommand, ps)
-        ps = setFlag(Flag.U, false, ps)
+        ps = setFlag(Flag.U, unusedFlag, ps)
         ps = setFlag(Flag.V, overflowFlag, ps)
         ps = setFlag(Flag.N, negativeFlag, ps)
 
@@ -69,8 +70,16 @@ class CpuRegisters {
     var pc: Word = Word(0x0000);
 
     // Stack Pointer:
-    // can be accessed using interrupts, pulls, pushes, and transfers.
-    var s: NesByte = NesByte(0x00);
+    // The NMOS 65xx processors have 256 bytes of stack memory, ranging
+    // from $0100 to $01FF. The S register is a 8-bit offset to the stack
+    // page. In other words, whenever anything is being pushed on the
+    // stack, it will be stored to the address $0100+S.
+    //
+    // The Stack pointer can be read and written by transfering its value
+    // to or from the index register X (see below) with the TSX and TXS
+    // this register is decremented every time a byte is pushed onto the stack,
+    // and incremented when a byte is popped off the stack.
+    var sp: NesByte = NesByte(0xFF);
 
     // Processor Status:
     // This 8-bit register stores the state of the processor. The bits in
@@ -87,6 +96,7 @@ class CpuRegisters {
 
     fun reset() {
         this.pc = Word(0)
+        this.ps = ProcessorStatus()
         this.x = NesByte(0)
         this.y = NesByte(0)
     }
@@ -126,5 +136,9 @@ class CpuRegisters {
     fun setZeroFlag(value: NesByte) {
         val result = value == NesByte(0)
         ps.zeroFlag = result
+    }
+
+    fun setInterrupt(i: Boolean) {
+        ps.interruptDisabled = i;
     }
 }

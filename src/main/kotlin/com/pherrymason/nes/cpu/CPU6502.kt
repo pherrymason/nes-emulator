@@ -1,17 +1,14 @@
 package com.pherrymason.nes.cpu
 
-import com.pherrymason.nes.Address
+import com.pherrymason.nes.*
 import com.pherrymason.nes.cpu.InstructionCode.*
-import com.pherrymason.nes.NesByte
-import com.pherrymason.nes.ProgramCounter
-import com.pherrymason.nes.RAM
 
 /**
  * The NES CPU is based on the 6502 processor and runs at approximately 1.79 MHz
  * (1.66 MHz in a PAL NES)
  */
 @ExperimentalUnsignedTypes
-class CPU6502 (private var ram: RAM){
+class CPU6502(private var ram: RAM) {
     public val registers = CpuRegisters();
 
     // Memory
@@ -26,87 +23,98 @@ class CPU6502 (private var ram: RAM){
     }
 
     fun clock() {
-        val instruction = Instruction.fromMemory(read(this.registers.pc))
+        val instruction = InstructionDescription.fromMemory(read(this.registers.pc))
         val address = this.decodeOperationAddress(this.registers.pc, instruction)
         val operand = read(address)
         exe(instruction, operand);
     }
 
-    fun exe(instruction: Instruction, operand: NesByte) {
-        when (instruction.instruction) {
-            ADC -> toImplement(instruction)
+    fun exe(instructionDescription: InstructionDescription, operand: NesByte) {
+        when (instructionDescription.instruction) {
+            ADC -> toImplement(instructionDescription)
             AND -> {
                 val result = registers.a and operand
                 registers.setNegativeFlag(result)
                 registers.setZeroFlag(result)
                 registers.a = result
             }
-            ASL -> toImplement(instruction);
-            BCC -> toImplement(instruction);
-            BCS -> toImplement(instruction);
-            BEQ -> toImplement(instruction);
-            BIT -> toImplement(instruction);
-            BMI -> toImplement(instruction);
-            BNE -> toImplement(instruction);
-            BPL -> toImplement(instruction);
+            ASL -> toImplement(instructionDescription);
+            BCC -> toImplement(instructionDescription);
+            BCS -> toImplement(instructionDescription);
+            BEQ -> toImplement(instructionDescription);
+            BIT -> toImplement(instructionDescription);
+            BMI -> toImplement(instructionDescription);
+            BNE -> toImplement(instructionDescription);
+            BPL -> toImplement(instructionDescription);
             BRK -> {
                 // 7 cycles
                 // TODO advances pc +2
-                // push PorgramCounterRegister and Processor Status register to the stack
-                // set InterruptFlag
+                registers.pc += 1
+                // ignore operand
+                registers.pc += 1
+
+                registers.ps.breakCommand = true
+
+                this.ram.write(Address(0x100).plus(registers.sp), registers.pc.lowByte())
+                registers.sp -= 1
+                this.ram.write(Address(0x100) + registers.sp, registers.pc.highByte())
+                registers.sp -= 1
+
                 // Reload the Pc from the vector at 0xFFFE-0xFFFF
             }
-            BVC -> toImplement(instruction);
-            BVS -> toImplement(instruction);
-            CLC -> toImplement(instruction);
-            CLD -> toImplement(instruction);
-            CLI -> toImplement(instruction);
-            CLV -> toImplement(instruction);
-            CMP -> toImplement(instruction);
-            CPX -> toImplement(instruction);
-            CPY -> toImplement(instruction);
-            DEC -> toImplement(instruction);
-            DEX -> toImplement(instruction);
-            DEY -> toImplement(instruction);
-            EOR -> toImplement(instruction);
-            INC -> toImplement(instruction);
-            INX -> toImplement(instruction);
-            INY -> toImplement(instruction);
-            JMP -> toImplement(instruction);
-            JSR -> toImplement(instruction);
-            LDA -> toImplement(instruction);
-            LDX -> toImplement(instruction);
-            LDY -> toImplement(instruction);
-            LSR -> toImplement(instruction);
-            NOP -> toImplement(instruction);
-            ORA -> toImplement(instruction);
-            PHA -> toImplement(instruction);
-            PHP -> toImplement(instruction);
-            PLA -> toImplement(instruction);
-            PLP -> toImplement(instruction);
-            ROL -> toImplement(instruction);
-            ROR -> toImplement(instruction);
-            RTI -> toImplement(instruction);
-            RTS -> toImplement(instruction);
-            SBC -> toImplement(instruction);
-            SEC -> toImplement(instruction);
-            SED -> toImplement(instruction);
-            SEI -> toImplement(instruction);
-            STA -> toImplement(instruction);
-            STX -> toImplement(instruction);
-            STY -> toImplement(instruction);
-            TAX -> toImplement(instruction);
-            TAY -> toImplement(instruction);
-            TSX -> toImplement(instruction);
-            TXA -> toImplement(instruction);
-            TXS -> toImplement(instruction);
-            TYA -> toImplement(instruction);
+            BVC -> toImplement(instructionDescription);
+            BVS -> toImplement(instructionDescription);
+            CLC -> toImplement(instructionDescription);
+            CLD -> toImplement(instructionDescription);
+            CLI -> toImplement(instructionDescription);
+            CLV -> toImplement(instructionDescription);
+            CMP -> toImplement(instructionDescription);
+            CPX -> toImplement(instructionDescription);
+            CPY -> toImplement(instructionDescription);
+            DEC -> toImplement(instructionDescription);
+            DEX -> toImplement(instructionDescription);
+            DEY -> toImplement(instructionDescription);
+            EOR -> toImplement(instructionDescription);
+            INC -> toImplement(instructionDescription);
+            INX -> toImplement(instructionDescription);
+            INY -> toImplement(instructionDescription);
+            JMP -> toImplement(instructionDescription);
+            JSR -> toImplement(instructionDescription);
+            LDA -> toImplement(instructionDescription);
+            LDX -> toImplement(instructionDescription);
+            LDY -> toImplement(instructionDescription);
+            LSR -> toImplement(instructionDescription);
+            NOP -> toImplement(instructionDescription);
+            ORA -> toImplement(instructionDescription);
+            PHA -> toImplement(instructionDescription);
+            PHP -> toImplement(instructionDescription);
+            PLA -> toImplement(instructionDescription);
+            PLP -> toImplement(instructionDescription);
+            ROL -> toImplement(instructionDescription);
+            ROR -> toImplement(instructionDescription);
+            RTI -> toImplement(instructionDescription);
+            RTS -> toImplement(instructionDescription);
+            SBC -> toImplement(instructionDescription);
+            SEC -> toImplement(instructionDescription);
+            SED -> toImplement(instructionDescription);
+            SEI -> toImplement(instructionDescription);
+            STA -> toImplement(instructionDescription);
+            STX -> toImplement(instructionDescription);
+            STY -> toImplement(instructionDescription);
+            TAX -> toImplement(instructionDescription);
+            TAY -> toImplement(instructionDescription);
+            TSX -> toImplement(instructionDescription);
+            TXA -> toImplement(instructionDescription);
+            TXS -> toImplement(instructionDescription);
+            TYA -> toImplement(instructionDescription);
         }
     }
 
-    fun decodeOperationAddress(programCounter: ProgramCounter, instruction: Instruction): Address {
-        val valor: NesByte;
-        when (instruction.mode) {
+    fun decodeOperationAddress(
+        programCounter: ProgramCounter,
+        instructionDescription: InstructionDescription
+    ): Address {
+        when (instructionDescription.mode) {
             AddressingMode.Immediate -> {
                 // 2 bytes
                 //value = this.ram[programCounter + 1];
@@ -229,7 +237,7 @@ class CPU6502 (private var ram: RAM){
                 val lo = read(Address(arg, NesByte(0)))
                 val hi = read(Address(arg + 1 and 0xFF, NesByte(0)))
 
-                var address = Address(lo,hi)
+                var address = Address(lo, hi)
                 address = address.plus(registers.y)
 
                 return address
@@ -254,7 +262,7 @@ class CPU6502 (private var ram: RAM){
         return this.ram.read(address)
     }
 
-    private fun toImplement(instruction: Instruction) {
+    private fun toImplement(instructionDescription: InstructionDescription) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

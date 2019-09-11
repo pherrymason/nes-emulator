@@ -2,7 +2,10 @@ package com.pherrymason.nes
 
 @ExperimentalUnsignedTypes
 class RAM {
+    val STACK_ADDRESS = Address(0x100)
     val memory: MutableMap<Address, NesByte> = mutableMapOf()
+
+
 
     fun read(address: Address): NesByte {
         return memory.getOrDefault(address, NesByte(0x00))

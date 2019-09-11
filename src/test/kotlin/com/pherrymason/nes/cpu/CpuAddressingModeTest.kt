@@ -40,7 +40,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeImmediateMode() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.Immediate)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.Immediate)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
 
@@ -52,7 +52,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeAbsoluteMode() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.Absolute)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.Absolute)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
         ram.write(Address(2), NesByte(0x10))
@@ -65,7 +65,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeZeroPage() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPage)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPage)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
 
@@ -77,7 +77,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeZeroPageX() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
         cpu.registers.storeX(NesByte(1))
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
@@ -90,7 +90,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeZeroPageXWithOverflow() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.ZeroPageX)
         cpu.registers.storeX(NesByte(1))
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0xFF))
@@ -104,7 +104,7 @@ class CpuAddressingModeTest {
     @Test
     fun decodeZeroPageY() {
         this.cpu.registers.storeY(NesByte(1))
-        val instruction = Instruction.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
 
@@ -116,12 +116,12 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeZeroPageYWithOverflow() {
-        var instruction = Instruction.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
+        var instruction = InstructionDescription.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0xFF))
 
         this.cpu.registers.storeY(NesByte(1))
-        instruction = Instruction.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
+        instruction = InstructionDescription.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
         val pc = ProgramCounter(0)
         val address = this.cpu.decodeOperationAddress(pc, instruction)
 
@@ -130,7 +130,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeAbsoluteXIndexed() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteXIndexed);
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteXIndexed);
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
         ram.write(Address(2), NesByte(0x10))
@@ -144,7 +144,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeAbsoluteYIndexed() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteYIndexed)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteYIndexed)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
         ram.write(Address(2), NesByte(0x10))
@@ -158,7 +158,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeRelative() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), signedToUnsigned(1))
 
@@ -171,7 +171,7 @@ class CpuAddressingModeTest {
     @Test
     fun decodeRelativeNeutral() {
         // OPCode with relative 0
-        val instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), signedToUnsigned(0))
         val pc = ProgramCounter(0)
@@ -182,7 +182,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeRelativeNegative() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BCC, AddressingMode.Relative)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), signedToUnsigned(-1))
 
@@ -194,7 +194,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodeIndirect() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.JMP, AddressingMode.Indirect)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.JMP, AddressingMode.Indirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(100))
         ram.write(Address(2), NesByte(0))
@@ -207,7 +207,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodePreIndexedIndirect() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(101))
         cpu.registers.storeX(NesByte(1))
@@ -220,7 +220,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodePreIndexedIndirectOverflows() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(246))
         cpu.registers.storeX(NesByte(110))   // 246 + 110 will effectively point to 100
@@ -233,7 +233,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodePostIndirectIndexed() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(104))
         cpu.registers.storeY(NesByte(0))
@@ -246,7 +246,7 @@ class CpuAddressingModeTest {
 
     @Test
     fun decodePostIndirectIndexedCrossingPage() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(246))
         cpu.registers.storeY(NesByte(10))

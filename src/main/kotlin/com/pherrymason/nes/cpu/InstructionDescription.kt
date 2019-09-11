@@ -13,8 +13,8 @@ enum class InstructionCode {
 }
 
 @ExperimentalUnsignedTypes
-enum class Instruction constructor(val opcode: NesByte, val instruction: InstructionCode,
-                                   val mode: AddressingMode
+enum class InstructionDescription constructor(val opcode: NesByte, val instruction: InstructionCode,
+                                              val mode: AddressingMode
 ) {
     // AND
     And_Immediate(NesByte(0x29), InstructionCode.AND, AddressingMode.Immediate),
@@ -99,12 +99,12 @@ enum class Instruction constructor(val opcode: NesByte, val instruction: Instruc
     );
 
     companion object {
-        fun fromInstructionCode(code: InstructionCode, mode: AddressingMode): Instruction {
+        fun fromInstructionCode(code: InstructionCode, mode: AddressingMode): InstructionDescription {
             return values().first {
                 it.instruction == code && it.mode == mode
             }
         }
-        fun fromMemory(value: NesByte): Instruction = values().first {
+        fun fromMemory(value: NesByte): InstructionDescription = values().first {
             it.opcode == value
         }
     }

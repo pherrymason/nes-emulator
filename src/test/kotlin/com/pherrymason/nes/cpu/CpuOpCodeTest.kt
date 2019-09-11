@@ -13,7 +13,7 @@ class CpuOpCodeTest {
 
     @Test
     fun ANDTest() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.AND, AddressingMode.Immediate)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.AND, AddressingMode.Immediate)
         ram.write(Address(0), instruction.opcode)
 
         // --------------------------------------------------
@@ -49,9 +49,21 @@ class CpuOpCodeTest {
 
     @Test
     fun BRKTest() {
-        val instruction = Instruction.fromInstructionCode(InstructionCode.BRK, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BRK, AddressingMode.Implied)
 
         ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x00))
         cpu.clock()
+        assertEquals(cpu.registers.pc, Address(2), "PC does not point correctly")
+
+        // The stack should contain the value of PC
+        val loByte = ram.read(ram.STACK_ADDRESS + 0xFF)
+        val hiByte = ram.read(ram.STACK_ADDRESS + 0xFE)
+
+        assertEquals(Address(loByte, hiByte), cpu.registers.pc, "Stack does not contain expected value")
+
+        // The stack should contain the value of Processor Status
+        val psDump = ram.read(ram.STACK_ADDRESS + 0xFD)
+        assertEquals(cpu.registers.ps.dump(), psDump, "Processor status was not copied to the Stack")
     }
 }
