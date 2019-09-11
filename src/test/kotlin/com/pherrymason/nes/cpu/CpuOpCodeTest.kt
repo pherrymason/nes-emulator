@@ -53,17 +53,25 @@ class CpuOpCodeTest {
 
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x00))
+        // Setup an address in vector 0xFFFE-0xFFFF
+        ram.write(Address(0xFFFE), NesByte(0x03))
+        ram.write(Address(0xFFFF), NesByte(0xFF))
+
+
         cpu.clock()
-        assertEquals(cpu.registers.pc, Address(2), "PC does not point correctly")
+        assertEquals(cpu.registers.pc, Address(0xFF03), "PC does not point correctly")
 
         // The stack should contain the value of PC
         val loByte = ram.read(ram.STACK_ADDRESS + 0xFF)
         val hiByte = ram.read(ram.STACK_ADDRESS + 0xFE)
 
-        assertEquals(Address(loByte, hiByte), cpu.registers.pc, "Stack does not contain expected value")
+        assertEquals(Address(loByte, hiByte), Address(0x02), "Stack does not contain expected value")
 
         // The stack should contain the value of Processor Status
         val psDump = ram.read(ram.STACK_ADDRESS + 0xFD)
         assertEquals(cpu.registers.ps.dump(), psDump, "Processor status was not copied to the Stack")
+
+        assertEquals(true, cpu.registers.ps.interruptDisabled, "Interrupt flag is not set")
+        assertEquals(true, cpu.registers.ps.breakCommand, "Break flag is not set")
     }
 }

@@ -48,19 +48,30 @@ class CPU6502(private var ram: RAM) {
             BPL -> toImplement(instructionDescription);
             BRK -> {
                 // 7 cycles
-                // TODO advances pc +2
+                // BRK/IRQ/NMI first change the B-flag, then write P to stack, and then set the I-flag,
+                // the D-flag is NOT changed and should be cleared by software.
                 registers.pc += 1
                 // ignore operand
                 registers.pc += 1
 
                 registers.ps.breakCommand = true
 
+                // Store PC into the stack
                 this.ram.write(Address(0x100).plus(registers.sp), registers.pc.lowByte())
                 registers.sp -= 1
                 this.ram.write(Address(0x100) + registers.sp, registers.pc.highByte())
                 registers.sp -= 1
 
+                // Is it really important to enable this interrupt after storing PC on stack?
+                registers.ps.interruptDisabled = true
+
+                // Store PS into the stack
+                ram.write(ram.STACK_ADDRESS + registers.sp, registers.ps.dump())
+
                 // Reload the Pc from the vector at 0xFFFE-0xFFFF
+                val loByte = ram.read(Address(0xFFFE))
+                val hiByte = ram.read(Address(0xFFFF))
+                registers.pc = Address(loByte, hiByte)
             }
             BVC -> toImplement(instructionDescription);
             BVS -> toImplement(instructionDescription);
