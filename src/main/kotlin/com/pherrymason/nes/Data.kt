@@ -1,7 +1,7 @@
 package com.pherrymason.nes
 
 @ExperimentalUnsignedTypes
-class NesByte constructor(val byte: UByte) {
+open class NesByte constructor(val byte: UByte) {
     constructor(other: Int) : this(other.toUByte())
 
     infix operator fun plus(other: NesByte): NesByte = NesByte(byte.plus(other.byte).toUByte())
@@ -76,14 +76,11 @@ data class Word constructor(val word: UShort) {
     }
 
     infix operator fun minus(other: Int): Word = Word(word.toShort().minus(other).toUShort())
-
-    infix operator fun plus(other: Int): Word {
-        return Word(this.word.toShort().plus(other).toUShort())
-    }
-
-    infix operator fun plus(other: NesByte): Word {
-        return Word(word.plus(other.byte).toInt())
-    }
+    infix operator fun plus(other: Word): Word = Word((this.word + other.word).toUShort())
+    infix operator fun plus(other: Int): Word = Word(this.word.toShort().plus(other).toUShort())
+    infix operator fun plus(other: NesByte): Word = Word(word.plus(other.byte).toInt())
+    operator fun inc(): Word = Word((word + 1u).toUShort())
+    operator fun dec(): Word = Word((word - 1u).toUShort())
 
     fun lowByte(): NesByte {
         return NesByte(this.and(0xFF).word.toUByte())

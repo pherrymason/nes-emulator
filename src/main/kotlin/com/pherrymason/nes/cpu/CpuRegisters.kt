@@ -19,7 +19,8 @@ class ProcessorStatus {
         Z(1), // Zero Flag
         I(2), // Interrupt Disable
         D(3), // Decimal mode
-        B(4), // Break command
+        B(4), // Break command. Documentation states no actual B flag exists in Status regsiter.
+                    // This flag only exist when the Status is dumped into the stack.
         U(5), // Unused
         V(6), // Overflow
         N(7), // Negative

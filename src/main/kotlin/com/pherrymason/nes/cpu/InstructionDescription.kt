@@ -27,64 +27,27 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     And_IndirectY(NesByte(0x31), InstructionCode.AND, AddressingMode.PreIndexedIndirect),
 
     // Add with Carry (ADC)
-    AddwithCarry_Immediate(
-        NesByte(0x69),
-        InstructionCode.ADC,
-        AddressingMode.Immediate
-    ),
-    AddWithCarry_ZeroPage(
-        NesByte(0x65),
-        InstructionCode.ADC,
-        AddressingMode.ZeroPage
-    ),
-    AddWithCarry_ZeroPageIndexed(
-        NesByte(0x75),
-        InstructionCode.ADC,
-        AddressingMode.ZeroPageX
-    ),
-    AddWithCarry_Absolute(
-        NesByte(0x6D),
-        InstructionCode.ADC,
-        AddressingMode.Absolute
-    ),
-    AddWithCarry_AbsoluteX(
-        NesByte(0x7D),
-        InstructionCode.ADC,
-        AddressingMode.AbsoluteXIndexed
-    ),
-    AddWithCarry_AbsoluteY(
-        NesByte(0x79),
-        InstructionCode.ADC,
-        AddressingMode.AbsoluteYIndexed
-    ),
-    AddWithCarry_IndirectX(
-        NesByte(0x61),
-        InstructionCode.ADC,
-        AddressingMode.PreIndexedIndirect
-    ),
-    AddWithCarry_IndirectY(
-        NesByte(0x71),
-        InstructionCode.ADC,
-        AddressingMode.PostIndexedIndirect
-    ),
+    AddwithCarry_Immediate(NesByte(0x69), InstructionCode.ADC, AddressingMode.Immediate),
+    AddWithCarry_ZeroPage(NesByte(0x65), InstructionCode.ADC, AddressingMode.ZeroPage),
+    AddWithCarry_ZeroPageIndexed(NesByte(0x75), InstructionCode.ADC, AddressingMode.ZeroPageX),
+    AddWithCarry_Absolute(NesByte(0x6D), InstructionCode.ADC, AddressingMode.Absolute),
+    AddWithCarry_AbsoluteX(NesByte(0x7D), InstructionCode.ADC, AddressingMode.AbsoluteXIndexed),
+    AddWithCarry_AbsoluteY(NesByte(0x79), InstructionCode.ADC, AddressingMode.AbsoluteYIndexed),
+    AddWithCarry_IndirectX(NesByte(0x61), InstructionCode.ADC, AddressingMode.PreIndexedIndirect),
+    AddWithCarry_IndirectY(NesByte(0x71), InstructionCode.ADC, AddressingMode.PostIndexedIndirect),
 
-    ForceBreak(
-        NesByte(0x00),
-        InstructionCode.BRK,
-        AddressingMode.Implied
-    ),
+    ForceBreak(NesByte(0x00), InstructionCode.BRK, AddressingMode.Implied),
 
-    LoadXRegister_ZeroPageIndexed(
-        NesByte(0xB6),
-        InstructionCode.LDX,
-        AddressingMode.ZeroPageY
-    ),
+    LoadXRegister_ZeroPageIndexed(NesByte(0xB6), InstructionCode.LDX, AddressingMode.ZeroPageY),
 
-    Branchifcarryflagclear(
-        NesByte(0x90),
-        InstructionCode.BCC,
-        AddressingMode.Relative
-    ),
+    BranchIfCarryFlagClear(NesByte(0x90), InstructionCode.BCC, AddressingMode.Relative),
+    BranchIfCarryFlagSet(NesByte(0xB0), InstructionCode.BCS, AddressingMode.Relative),
+    BranchIfEqual(NesByte(0xF0), InstructionCode.BEQ, AddressingMode.Relative),
+    BranchIfNotEqual(NesByte(0xD0), InstructionCode.BNE, AddressingMode.Relative),
+    BranchIfPositive(NesByte(0x10), InstructionCode.BPL, AddressingMode.Relative),
+    BranchIfMinus(NesByte(0x30), InstructionCode.BMI, AddressingMode.Relative),
+    BranchIfOverflowClear(NesByte(0x50), InstructionCode.BVC, AddressingMode.Relative),
+    BranchIfOverflowSet(NesByte(0x70), InstructionCode.BVS, AddressingMode.Relative),
 
     JumpAbsolute(
         NesByte(0x4C),
