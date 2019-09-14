@@ -3,6 +3,7 @@ package com.pherrymason.nes
 @ExperimentalUnsignedTypes
 class RAM {
     val STACK_ADDRESS = Address(0x100)
+    val PROGRAM_ADDRESS = Address(0x500)
     val memory: MutableMap<Address, NesByte> = mutableMapOf()
 
 

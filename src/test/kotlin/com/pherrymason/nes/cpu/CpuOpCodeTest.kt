@@ -86,11 +86,13 @@ class CpuOpCodeTest {
         // program counter to cause a branch to a new location
         // This scenario should jump to 0x010 if carry flag.
         // else it should jump to 0x02
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BCC, AddressingMode
-            .Relative)
+        val instruction = InstructionDescription.fromInstructionCode(
+            InstructionCode.BCC, AddressingMode
+                .Relative
+        )
 
         ram.write(Address(0), instruction.opcode)
-        ram.write(Address(1), NesByte( 8 + 128))
+        ram.write(Address(1), NesByte(8 + 128))
 
         // Scenario 1: No carry flag
         cpu.registers.ps.carryBit = true
@@ -100,7 +102,7 @@ class CpuOpCodeTest {
         // Scenario 2: Carry flag is set
         cpu.reset()
         ram.write(Address(0), instruction.opcode)
-        ram.write(Address(1), NesByte( 8 + 128))
+        ram.write(Address(1), NesByte(8 + 128))
         cpu.clock()
         assertEquals(Address(10), cpu.registers.pc)
 
@@ -113,11 +115,13 @@ class CpuOpCodeTest {
         // program counter to cause a branch to a new location
         // This scenario should jump to 0x010 if carry flag.
         // else it should jump to 0x02
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BCS, AddressingMode
-            .Relative)
+        val instruction = InstructionDescription.fromInstructionCode(
+            InstructionCode.BCS, AddressingMode
+                .Relative
+        )
 
         ram.write(Address(0), instruction.opcode)
-        ram.write(Address(1), NesByte( 8 + 128))
+        ram.write(Address(1), NesByte(8 + 128))
 
         // Scenario 1: No carry flag
         cpu.clock()
@@ -127,7 +131,7 @@ class CpuOpCodeTest {
         cpu.reset()
         cpu.registers.ps.carryBit = true
         ram.write(Address(0), instruction.opcode)
-        ram.write(Address(1), NesByte( 8 + 128))
+        ram.write(Address(1), NesByte(8 + 128))
         cpu.clock()
         assertEquals(Address(10), cpu.registers.pc)
 
@@ -427,6 +431,45 @@ class CpuOpCodeTest {
         cpu.registers.y = NesByte(0x10)
         cpu.clock()
         assertEquals(false, cpu.registers.ps.carryBit)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
+
+    @Test
+    fun DECTest() {
+        // Subtracts one from the value held at a specified memory location setting the zero and
+        // negative flags as appropriate.
+        // M,Z,N = M-1
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.DEC, AddressingMode.ZeroPage)
+
+        // Scenario 1: Result is not zero nor negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0xFF))
+        ram.write(Address(0xFF), NesByte(10))
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(9), ram.read(Address(0xFF)))
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: Result is zero
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0xFF))
+        ram.write(Address(0xFF), NesByte(1))
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0), ram.read(Address(0xFF)))
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: Result is negative
+        cpu.reset()
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0xFF))
+        ram.write(Address(0xFF), NesByte(0))
+        cpu.clock()
+        assertEquals(NesByte(255), ram.read(Address(0xFF)))
         assertEquals(false, cpu.registers.ps.zeroFlag)
         assertEquals(true, cpu.registers.ps.negativeFlag)
     }

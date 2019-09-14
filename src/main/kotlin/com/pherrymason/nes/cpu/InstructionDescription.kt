@@ -71,6 +71,11 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     CompareYRegister_ZeroPage(NesByte(0xC4), InstructionCode.CPY, AddressingMode.ZeroPage),
     CompareYRegister_Absolute(NesByte(0xCC), InstructionCode.CPY, AddressingMode.Absolute),
 
+    Decrement_ZeroPage(NesByte(0xC6), InstructionCode.DEC, AddressingMode.ZeroPage),
+    Decrement_ZeroPageX(NesByte(0xD6), InstructionCode.DEC, AddressingMode.ZeroPageX),
+    Decrement_Absolute(NesByte(0xCE), InstructionCode.DEC, AddressingMode.Absolute),
+    Decrement_AbsoluteX(NesByte(0xDE), InstructionCode.DEC, AddressingMode.AbsoluteXIndexed),
+
     JumpAbsolute(
         NesByte(0x4C),
         InstructionCode.JMP,

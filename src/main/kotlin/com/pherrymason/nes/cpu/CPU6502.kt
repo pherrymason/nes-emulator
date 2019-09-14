@@ -52,7 +52,7 @@ class CPU6502(private var ram: RAM) {
             CMP -> opCMP(decodedAddress)
             CPX -> opCPX(decodedAddress)
             CPY -> opCPY(decodedAddress)
-            DEC -> toImplement(instructionDescription)
+            DEC -> opDEC(decodedAddress)
             DEX -> toImplement(instructionDescription)
             DEY -> toImplement(instructionDescription)
             EOR -> toImplement(instructionDescription)
@@ -234,6 +234,10 @@ class CPU6502(private var ram: RAM) {
         return this.ram.read(address)
     }
 
+    fun write(address: Address, value: NesByte) {
+        this.ram.write(address, value)
+    }
+
     private fun toImplement(instructionDescription: InstructionDescription) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -392,6 +396,16 @@ class CPU6502(private var ram: RAM) {
         registers.ps.carryBit = (operand <= registers.y)
         registers.ps.zeroFlag = (operand == registers.y)
         registers.ps.negativeFlag = temp and 0x80 == 0x80
+    }
+
+    private fun opDEC(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val operand = read(decodedAddress.address)
+        val result = operand.toInt() - 1
+        write(decodedAddress.address, NesByte(result and 0xFF))
+
+        registers.ps.zeroFlag = result == 0
+        registers.ps.negativeFlag = result < 0
     }
 }
 
