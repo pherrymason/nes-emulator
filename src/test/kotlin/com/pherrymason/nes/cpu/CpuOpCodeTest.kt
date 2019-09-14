@@ -473,4 +473,150 @@ class CpuOpCodeTest {
         assertEquals(false, cpu.registers.ps.zeroFlag)
         assertEquals(true, cpu.registers.ps.negativeFlag)
     }
+
+    @Test
+    fun DEXTest() {
+        // Subtracts one from the X register setting the zero and negative flags as appropriate.
+        // X,Z,N = X-1
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.DEX, AddressingMode.Implied)
+
+        // Scenario 1: Result is not zero nor negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.x = NesByte(10)
+        cpu.clock()
+        assertEquals(NesByte(9), cpu.registers.x)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: Result is zero
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.x = NesByte(1)
+        cpu.clock()
+        assertEquals(NesByte(0), cpu.registers.x)
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: Result is negative
+        cpu.reset()
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.x = NesByte(0)
+        cpu.clock()
+        assertEquals(NesByte(255), cpu.registers.x)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
+
+    @Test
+    fun DEYTest() {
+        // Subtracts one from the Y register setting the zero and negative flags as appropriate.
+        // Y,Z,N = Y-1
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.DEY, AddressingMode.Implied)
+
+        // Scenario 1: Result is not zero nor negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.y = NesByte(10)
+        cpu.clock()
+        assertEquals(NesByte(9), cpu.registers.y)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: Result is zero
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.y = NesByte(1)
+        cpu.clock()
+        assertEquals(NesByte(0), cpu.registers.y)
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: Result is negative
+        cpu.reset()
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.y = NesByte(0)
+        cpu.clock()
+        assertEquals(NesByte(255), cpu.registers.y)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
+
+    @Test
+    fun INCTest() {
+        // Adds one to the value held at a specified memory location setting the zero and
+        // negative flags as appropriate.
+        // M,Z,N = M+1
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.INC, AddressingMode.ZeroPage)
+
+        // Scenario 1: Result is not zero nor negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0xFF))
+        ram.write(Address(255), NesByte(8))
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(9), ram.read(Address(255)))
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: Result is zero
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0xFF))
+        ram.write(Address(255), NesByte(255))
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0), ram.read(Address(255)))
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
+
+    @Test
+    fun INXTest() {
+        // Adds one to the X register setting the zero and negative flags as appropriate.
+        // X,Z,N = X+1
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.INX, AddressingMode.Implied)
+
+        // Scenario 1: Result is not zero nor negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.x = NesByte(8)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(9), cpu.registers.x)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: Result is zero
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.x = NesByte(0xFF)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0), cpu.registers.x)
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
+
+    @Test
+    fun INYTest() {
+        // Adds one to the Y register setting the zero and negative flags as appropriate.
+        // Y,Z,N = Y+1
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.INY, AddressingMode.Implied)
+
+        // Scenario 1: Result is not zero nor negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.y = NesByte(8)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(9), cpu.registers.y)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: Result is zero
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.y = NesByte(0xFF)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0), cpu.registers.y)
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
 }

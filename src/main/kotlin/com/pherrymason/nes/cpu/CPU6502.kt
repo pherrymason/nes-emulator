@@ -53,12 +53,12 @@ class CPU6502(private var ram: RAM) {
             CPX -> opCPX(decodedAddress)
             CPY -> opCPY(decodedAddress)
             DEC -> opDEC(decodedAddress)
-            DEX -> toImplement(instructionDescription)
-            DEY -> toImplement(instructionDescription)
+            DEX -> opDEX(decodedAddress)
+            DEY -> opDEY(decodedAddress)
             EOR -> toImplement(instructionDescription)
-            INC -> toImplement(instructionDescription)
-            INX -> toImplement(instructionDescription)
-            INY -> toImplement(instructionDescription)
+            INC -> opINC(decodedAddress)
+            INX -> opINX(decodedAddress)
+            INY -> opINY(decodedAddress)
             JMP -> toImplement(instructionDescription)
             JSR -> toImplement(instructionDescription)
             LDA -> toImplement(instructionDescription)
@@ -406,6 +406,54 @@ class CPU6502(private var ram: RAM) {
 
         registers.ps.zeroFlag = result == 0
         registers.ps.negativeFlag = result < 0
+    }
+
+    private fun opDEX(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val result = registers.x.toInt() - 1
+
+        registers.x = NesByte(result)
+        registers.ps.zeroFlag = result == 0
+        registers.ps.negativeFlag = result < 0
+    }
+
+    private fun opDEY(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val result = registers.y.toInt() - 1
+
+        registers.y = NesByte(result)
+        registers.ps.zeroFlag = result == 0
+        registers.ps.negativeFlag = result < 0
+    }
+
+    private fun opINC(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val operand = read(decodedAddress.address)
+        val result = operand.toInt() + 1
+        write(decodedAddress.address, NesByte(result and 0xFF))
+
+        registers.ps.zeroFlag = (result and 0xFF) == 0
+        registers.ps.negativeFlag = result > 255
+    }
+
+    private fun opINX(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val operand = registers.x
+        val result = operand.toInt() + 1
+        registers.x = NesByte(result and 0xFF)
+
+        registers.ps.zeroFlag = (result and 0xFF) == 0
+        registers.ps.negativeFlag = result > 255
+    }
+
+    private fun opINY(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val operand = registers.y
+        val result = operand.toInt() + 1
+        registers.y = NesByte(result and 0xFF)
+
+        registers.ps.zeroFlag = (result and 0xFF) == 0
+        registers.ps.negativeFlag = result > 255
     }
 }
 

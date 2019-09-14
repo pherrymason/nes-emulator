@@ -76,6 +76,17 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     Decrement_Absolute(NesByte(0xCE), InstructionCode.DEC, AddressingMode.Absolute),
     Decrement_AbsoluteX(NesByte(0xDE), InstructionCode.DEC, AddressingMode.AbsoluteXIndexed),
 
+    DecrementX(NesByte(0xCA), InstructionCode.DEX, AddressingMode.Implied),
+    DecrementY(NesByte(0x88), InstructionCode.DEY, AddressingMode.Implied),
+
+    IncrementMemory_ZeroPage(NesByte(0xE6), InstructionCode.INC, AddressingMode.ZeroPage),
+    IncrementMemory_ZeroPageX(NesByte(0xF6), InstructionCode.INC, AddressingMode.ZeroPageX),
+    IncrementMemory_Absolute(NesByte(0xEE), InstructionCode.INC, AddressingMode.Absolute),
+    IncrementMemory_AbsoluteX(NesByte(0xFE), InstructionCode.INC, AddressingMode.AbsoluteXIndexed),
+
+    IncrementX(NesByte(0xE8), InstructionCode.INX, AddressingMode.Implied),
+    IncrementY(NesByte(0xC8), InstructionCode.INY, AddressingMode.Implied),
+
     JumpAbsolute(
         NesByte(0x4C),
         InstructionCode.JMP,
