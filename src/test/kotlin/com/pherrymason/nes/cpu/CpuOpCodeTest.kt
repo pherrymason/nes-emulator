@@ -264,4 +264,16 @@ class CpuOpCodeTest {
         cpu.clock()
         assertEquals(Address(2), cpu.registers.pc)
     }
+
+    @Test
+    fun CLCTest() {
+        // Set the carry flag to zero.
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLC, AddressingMode.Implied)
+
+        ram.write(Address(0), instruction.opcode)
+        cpu.registers.ps.carryBit = true
+        cpu.clock()
+
+        assertEquals(false, cpu.registers.ps.carryBit)
+    }
 }

@@ -49,6 +49,8 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     BranchIfOverflowClear(NesByte(0x50), InstructionCode.BVC, AddressingMode.Relative),
     BranchIfOverflowSet(NesByte(0x70), InstructionCode.BVS, AddressingMode.Relative),
 
+    ClearCarryFlag(NesByte(0x18), InstructionCode.CLC, AddressingMode.Implied),
+
     JumpAbsolute(
         NesByte(0x4C),
         InstructionCode.JMP,

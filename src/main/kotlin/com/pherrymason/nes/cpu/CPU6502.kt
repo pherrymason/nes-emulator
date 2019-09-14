@@ -45,7 +45,7 @@ class CPU6502(private var ram: RAM) {
             BRK -> opBRK(decodedAddress)
             BVC -> opBVC(decodedAddress)
             BVS -> opBVS(decodedAddress)
-            CLC -> toImplement(instructionDescription);
+            CLC -> opCLC(decodedAddress)
             CLD -> toImplement(instructionDescription);
             CLI -> toImplement(instructionDescription);
             CLV -> toImplement(instructionDescription);
@@ -347,6 +347,11 @@ class CPU6502(private var ram: RAM) {
         if (registers.ps.overflowFlag) {
             registers.pc+= decodedAddress.relativeAddress ?: throw IllegalAccessError("Missing relative address.")
         }
+    }
+
+    private fun opCLC(decodedAddress: DecodedAddressMode) {
+        // Two cycles
+        registers.ps.carryBit = false
     }
 }
 
