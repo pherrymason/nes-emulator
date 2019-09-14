@@ -356,4 +356,78 @@ class CpuOpCodeTest {
         assertEquals(false, cpu.registers.ps.zeroFlag)
         assertEquals(true, cpu.registers.ps.negativeFlag)
     }
+
+    @Test
+    fun CPXTest() {
+        // This instruction compares the contents of the X register with another memory held value and
+        // sets the zero and carry flags as appropriate.
+        // Z,C,N = X-M
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CPX, AddressingMode.Immediate)
+
+        // Scenario 1: X >= M
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x01))
+        cpu.registers.x = NesByte(0x10)
+        cpu.clock()
+        assertEquals(true, cpu.registers.ps.carryBit)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: X == M
+        cpu.reset()
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x10))
+        cpu.registers.x = NesByte(0x10)
+        cpu.clock()
+        assertEquals(true, cpu.registers.ps.carryBit)
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: X-M < 0
+        cpu.reset()
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x12))
+        cpu.registers.x = NesByte(0x10)
+        cpu.clock()
+        assertEquals(false, cpu.registers.ps.carryBit)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
+
+    @Test
+    fun CPYTest() {
+        // This instruction compares the contents of the Y register with another memory held value and
+        // sets the zero and carry flags as appropriate.
+        // Z,C,N = Y-M
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CPY, AddressingMode.Immediate)
+
+        // Scenario 1: Y >= M
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x01))
+        cpu.registers.y = NesByte(0x10)
+        cpu.clock()
+        assertEquals(true, cpu.registers.ps.carryBit)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: Y == M
+        cpu.reset()
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x10))
+        cpu.registers.y = NesByte(0x10)
+        cpu.clock()
+        assertEquals(true, cpu.registers.ps.carryBit)
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: Y-M < 0
+        cpu.reset()
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x12))
+        cpu.registers.y = NesByte(0x10)
+        cpu.clock()
+        assertEquals(false, cpu.registers.ps.carryBit)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
+    }
 }

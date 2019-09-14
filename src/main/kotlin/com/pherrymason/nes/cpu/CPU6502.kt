@@ -27,18 +27,18 @@ class CPU6502(private var ram: RAM) {
         this.registers.pc++
 
         val decodedAddressResult = this.decodeOperationAddress(this.registers.pc, instruction)
-        exe(instruction, decodedAddressResult);
+        exe(instruction, decodedAddressResult)
     }
 
     fun exe(instructionDescription: InstructionDescription, decodedAddress: DecodedAddressMode) {
         when (instructionDescription.instruction) {
             ADC -> toImplement(instructionDescription)
             AND -> opAND(decodedAddress)
-            ASL -> toImplement(instructionDescription);
+            ASL -> toImplement(instructionDescription)
             BCC -> opBCC(decodedAddress)
             BCS -> opBCS(decodedAddress)
             BEQ -> opBEQ(decodedAddress)
-            BIT -> toImplement(instructionDescription);
+            BIT -> toImplement(instructionDescription)
             BMI -> opBMI(decodedAddress)
             BNE -> opBNE(decodedAddress)
             BPL -> opBPL(decodedAddress)
@@ -50,44 +50,44 @@ class CPU6502(private var ram: RAM) {
             CLI -> opCLI(decodedAddress)
             CLV -> opCLV(decodedAddress)
             CMP -> opCMP(decodedAddress)
-            CPX -> toImplement(instructionDescription);
-            CPY -> toImplement(instructionDescription);
-            DEC -> toImplement(instructionDescription);
-            DEX -> toImplement(instructionDescription);
-            DEY -> toImplement(instructionDescription);
-            EOR -> toImplement(instructionDescription);
-            INC -> toImplement(instructionDescription);
-            INX -> toImplement(instructionDescription);
-            INY -> toImplement(instructionDescription);
-            JMP -> toImplement(instructionDescription);
-            JSR -> toImplement(instructionDescription);
-            LDA -> toImplement(instructionDescription);
-            LDX -> toImplement(instructionDescription);
-            LDY -> toImplement(instructionDescription);
-            LSR -> toImplement(instructionDescription);
-            NOP -> toImplement(instructionDescription);
-            ORA -> toImplement(instructionDescription);
-            PHA -> toImplement(instructionDescription);
-            PHP -> toImplement(instructionDescription);
-            PLA -> toImplement(instructionDescription);
-            PLP -> toImplement(instructionDescription);
-            ROL -> toImplement(instructionDescription);
-            ROR -> toImplement(instructionDescription);
-            RTI -> toImplement(instructionDescription);
-            RTS -> toImplement(instructionDescription);
-            SBC -> toImplement(instructionDescription);
-            SEC -> toImplement(instructionDescription);
-            SED -> toImplement(instructionDescription);
-            SEI -> toImplement(instructionDescription);
-            STA -> toImplement(instructionDescription);
-            STX -> toImplement(instructionDescription);
-            STY -> toImplement(instructionDescription);
-            TAX -> toImplement(instructionDescription);
-            TAY -> toImplement(instructionDescription);
-            TSX -> toImplement(instructionDescription);
-            TXA -> toImplement(instructionDescription);
-            TXS -> toImplement(instructionDescription);
-            TYA -> toImplement(instructionDescription);
+            CPX -> opCPX(decodedAddress)
+            CPY -> opCPY(decodedAddress)
+            DEC -> toImplement(instructionDescription)
+            DEX -> toImplement(instructionDescription)
+            DEY -> toImplement(instructionDescription)
+            EOR -> toImplement(instructionDescription)
+            INC -> toImplement(instructionDescription)
+            INX -> toImplement(instructionDescription)
+            INY -> toImplement(instructionDescription)
+            JMP -> toImplement(instructionDescription)
+            JSR -> toImplement(instructionDescription)
+            LDA -> toImplement(instructionDescription)
+            LDX -> toImplement(instructionDescription)
+            LDY -> toImplement(instructionDescription)
+            LSR -> toImplement(instructionDescription)
+            NOP -> toImplement(instructionDescription)
+            ORA -> toImplement(instructionDescription)
+            PHA -> toImplement(instructionDescription)
+            PHP -> toImplement(instructionDescription)
+            PLA -> toImplement(instructionDescription)
+            PLP -> toImplement(instructionDescription)
+            ROL -> toImplement(instructionDescription)
+            ROR -> toImplement(instructionDescription)
+            RTI -> toImplement(instructionDescription)
+            RTS -> toImplement(instructionDescription)
+            SBC -> toImplement(instructionDescription)
+            SEC -> toImplement(instructionDescription)
+            SED -> toImplement(instructionDescription)
+            SEI -> toImplement(instructionDescription)
+            STA -> toImplement(instructionDescription)
+            STX -> toImplement(instructionDescription)
+            STY -> toImplement(instructionDescription)
+            TAX -> toImplement(instructionDescription)
+            TAY -> toImplement(instructionDescription)
+            TSX -> toImplement(instructionDescription)
+            TXA -> toImplement(instructionDescription)
+            TXS -> toImplement(instructionDescription)
+            TYA -> toImplement(instructionDescription)
         }
     }
 
@@ -371,6 +371,26 @@ class CPU6502(private var ram: RAM) {
 
         registers.ps.carryBit = (operand <= registers.a)
         registers.ps.zeroFlag = (operand == registers.a)
+        registers.ps.negativeFlag = temp and 0x80 == 0x80
+    }
+
+    private fun opCPX(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val operand = read(decodedAddress.address)
+        val temp = registers.x.byte.toShort() - operand.byte.toShort()
+
+        registers.ps.carryBit = (operand <= registers.x)
+        registers.ps.zeroFlag = (operand == registers.x)
+        registers.ps.negativeFlag = temp and 0x80 == 0x80
+    }
+
+    private fun opCPY(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val operand = read(decodedAddress.address)
+        val temp = registers.y.byte.toShort() - operand.byte.toShort()
+
+        registers.ps.carryBit = (operand <= registers.y)
+        registers.ps.zeroFlag = (operand == registers.y)
         registers.ps.negativeFlag = temp and 0x80 == 0x80
     }
 }
