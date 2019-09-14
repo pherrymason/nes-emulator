@@ -304,12 +304,56 @@ class CpuOpCodeTest {
     @Test
     fun CLVTest() {
         // Set the overflow flag to zero.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLI, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLV, AddressingMode.Implied)
 
         ram.write(Address(0), instruction.opcode)
-        cpu.registers.ps.interruptDisabled = true
+        cpu.registers.ps.overflowFlag = true
         cpu.clock()
 
-        assertEquals(false, cpu.registers.ps.interruptDisabled)
+        assertEquals(false, cpu.registers.ps.overflowFlag)
+    }
+
+    @Test
+    fun CMPTest() {
+        // This instruction compares the contents of the accumulator with another memory held value
+        // and sets the zero and carry flags as appropriate.
+        // C 	Carry Flag 	Set if A >= M
+        //Z 	Zero Flag 	Set if A = M
+        //I 	Interrupt Disable 	Not affected
+        //D 	Decimal Mode Flag 	Not affected
+        //B 	Break Command 	Not affected
+        //V 	Overflow Flag 	Not affected
+        //N 	Negative Flag 	Set if bit 7 of the result is set
+
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CMP, AddressingMode.Immediate)
+
+        // Scenario 1: M <= A
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x00))
+        cpu.registers.a = NesByte(0x01)
+        cpu.clock()
+        assertEquals(true, cpu.registers.ps.carryBit)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: M == A
+        cpu.reset()
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x01))
+        cpu.registers.a = NesByte(0x01)
+        cpu.clock()
+        assertEquals(true, cpu.registers.ps.carryBit)
+        assertEquals(true, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: M > A
+        cpu.reset()
+        ram.write(Address(0), instruction.opcode)
+        ram.write(Address(1), NesByte(0x02))
+        cpu.registers.a = NesByte(0x01)
+        cpu.clock()
+        assertEquals(false, cpu.registers.ps.carryBit)
+        assertEquals(false, cpu.registers.ps.zeroFlag)
+        assertEquals(false, cpu.registers.ps.negativeFlag)
     }
 }

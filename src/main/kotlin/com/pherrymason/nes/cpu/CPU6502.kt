@@ -48,8 +48,8 @@ class CPU6502(private var ram: RAM) {
             CLC -> opCLC(decodedAddress)
             CLD -> opCLD(decodedAddress)
             CLI -> opCLI(decodedAddress)
-            CLV -> toImplement(instructionDescription);
-            CMP -> toImplement(instructionDescription);
+            CLV -> opCLV(decodedAddress)
+            CMP -> opCMP(decodedAddress)
             CPX -> toImplement(instructionDescription);
             CPY -> toImplement(instructionDescription);
             DEC -> toImplement(instructionDescription);
@@ -357,6 +357,20 @@ class CPU6502(private var ram: RAM) {
     private fun opCLI(decodedAddress: DecodedAddressMode) {
         // Two cycles
         registers.ps.interruptDisabled = false
+    }
+
+    private fun opCLV(decodedAddress: DecodedAddressMode) {
+        // Two cycles
+        registers.ps.overflowFlag = false
+    }
+
+    private fun opCMP(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        val operand = read(decodedAddress.address)
+
+        registers.ps.carryBit = (operand <= registers.a)
+        registers.ps.zeroFlag = (operand == registers.a)
+
     }
 }
 

@@ -52,6 +52,16 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     ClearCarryFlag(NesByte(0x18), InstructionCode.CLC, AddressingMode.Implied),
     ClearDecimalMode(NesByte(0xD8), InstructionCode.CLD, AddressingMode.Implied),
     ClearInterruptFlag(NesByte(0x58), InstructionCode.CLI, AddressingMode.Implied),
+    ClearOverflowFlag(NesByte(0xB8), InstructionCode.CLV, AddressingMode.Implied),
+
+    Compare_Immediate(NesByte(0xC9), InstructionCode.CMP, AddressingMode.Immediate),
+    Compare_ZeroPage(NesByte(0xC5), InstructionCode.CMP, AddressingMode.ZeroPage),
+    Compare_ZeroPageX(NesByte(0xD5), InstructionCode.CMP, AddressingMode.ZeroPageX),
+    Compare_Absolute(NesByte(0xCD), InstructionCode.CMP, AddressingMode.Absolute),
+    Compare_AbsoluteX(NesByte(0xDD), InstructionCode.CMP, AddressingMode.AbsoluteXIndexed),
+    Compare_AbsoluteY(NesByte(0xD9), InstructionCode.CMP, AddressingMode.AbsoluteYIndexed),
+    Compare_IndirectX(NesByte(0xC1), InstructionCode.CMP, AddressingMode.PreIndexedIndirect),
+    Compare_IndirectY(NesByte(0xD1), InstructionCode.CMP, AddressingMode.PostIndexedIndirect),
 
     JumpAbsolute(
         NesByte(0x4C),
