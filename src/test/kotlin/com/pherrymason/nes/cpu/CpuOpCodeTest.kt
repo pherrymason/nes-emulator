@@ -276,4 +276,40 @@ class CpuOpCodeTest {
 
         assertEquals(false, cpu.registers.ps.carryBit)
     }
+
+    @Test
+    fun CLDTest() {
+        // Set the decimal mode flag to zero.
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLD, AddressingMode.Implied)
+
+        ram.write(Address(0), instruction.opcode)
+        cpu.registers.ps.decimalMode = true
+        cpu.clock()
+
+        assertEquals(false, cpu.registers.ps.decimalMode)
+    }
+
+    @Test
+    fun CLITest() {
+        // Set the interrupt flag to zero.
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLI, AddressingMode.Implied)
+
+        ram.write(Address(0), instruction.opcode)
+        cpu.registers.ps.interruptDisabled = true
+        cpu.clock()
+
+        assertEquals(false, cpu.registers.ps.interruptDisabled)
+    }
+
+    @Test
+    fun CLVTest() {
+        // Set the overflow flag to zero.
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLI, AddressingMode.Implied)
+
+        ram.write(Address(0), instruction.opcode)
+        cpu.registers.ps.interruptDisabled = true
+        cpu.clock()
+
+        assertEquals(false, cpu.registers.ps.interruptDisabled)
+    }
 }

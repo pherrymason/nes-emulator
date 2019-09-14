@@ -46,8 +46,8 @@ class CPU6502(private var ram: RAM) {
             BVC -> opBVC(decodedAddress)
             BVS -> opBVS(decodedAddress)
             CLC -> opCLC(decodedAddress)
-            CLD -> toImplement(instructionDescription);
-            CLI -> toImplement(instructionDescription);
+            CLD -> opCLD(decodedAddress)
+            CLI -> opCLI(decodedAddress)
             CLV -> toImplement(instructionDescription);
             CMP -> toImplement(instructionDescription);
             CPX -> toImplement(instructionDescription);
@@ -347,6 +347,16 @@ class CPU6502(private var ram: RAM) {
     private fun opCLC(decodedAddress: DecodedAddressMode) {
         // Two cycles
         registers.ps.carryBit = false
+    }
+
+    private fun opCLD(decodedAddress: DecodedAddressMode) {
+        // Two cycles
+        registers.ps.decimalMode = false
+    }
+
+    private fun opCLI(decodedAddress: DecodedAddressMode) {
+        // Two cycles
+        registers.ps.interruptDisabled = false
     }
 }
 
