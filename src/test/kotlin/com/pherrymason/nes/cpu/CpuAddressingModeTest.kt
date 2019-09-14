@@ -45,9 +45,9 @@ class CpuAddressingModeTest {
         ram.write(Address(1), NesByte(0x50))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(1), address)
+        assertEquals(Address(1), address.address)
     }
 
     @Test
@@ -58,9 +58,9 @@ class CpuAddressingModeTest {
         ram.write(Address(2), NesByte(0x10))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x1050), address)
+        assertEquals(Address(0x1050), address.address)
     }
 
     @Test
@@ -70,9 +70,9 @@ class CpuAddressingModeTest {
         ram.write(Address(1), NesByte(0x50))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x50), address)
+        assertEquals(Address(0x50), address.address)
     }
 
     @Test
@@ -83,9 +83,9 @@ class CpuAddressingModeTest {
         ram.write(Address(1), NesByte(0x50))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x51), address)
+        assertEquals(Address(0x51), address.address)
     }
 
     @Test
@@ -96,9 +96,9 @@ class CpuAddressingModeTest {
         ram.write(Address(1), NesByte(0xFF))
         val pc = ProgramCounter(0)
 
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0), address)
+        assertEquals(Address(0), address.address)
     }
 
     @Test
@@ -109,9 +109,9 @@ class CpuAddressingModeTest {
         ram.write(Address(1), NesByte(0x50))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x51), address)
+        assertEquals(Address(0x51), address.address)
     }
 
     @Test
@@ -123,37 +123,39 @@ class CpuAddressingModeTest {
         this.cpu.registers.storeY(NesByte(1))
         instruction = InstructionDescription.fromInstructionCode(InstructionCode.LDX, AddressingMode.ZeroPageY)
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0), address)
+        assertEquals(Address(0), address.address)
     }
 
     @Test
     fun decodeAbsoluteXIndexed() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteXIndexed);
+        val instruction =
+            InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteXIndexed);
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
         ram.write(Address(2), NesByte(0x10))
         this.cpu.registers.storeX(NesByte(1))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x1051), address)
+        assertEquals(Address(0x1051), address.address)
     }
 
     @Test
     fun decodeAbsoluteYIndexed() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteYIndexed)
+        val instruction =
+            InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.AbsoluteYIndexed)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x50))
         ram.write(Address(2), NesByte(0x10))
         this.cpu.registers.storeY(NesByte(1))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x1051), address)
+        assertEquals(Address(0x1051), address.address)
     }
 
     @Test
@@ -163,9 +165,9 @@ class CpuAddressingModeTest {
         ram.write(Address(1), signedToUnsigned(1))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(pc.plus(1), address)
+        assertEquals(pc.plus(2), address.address)
     }
 
     @Test
@@ -175,9 +177,9 @@ class CpuAddressingModeTest {
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), signedToUnsigned(0))
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(pc, address)
+        assertEquals(pc + 1, address.address)
     }
 
     @Test
@@ -186,10 +188,10 @@ class CpuAddressingModeTest {
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), signedToUnsigned(-1))
 
-        val pc = ProgramCounter(0)
+        val pc = ProgramCounter(1)
         val address = this.cpu.decodeOperationAddress(pc, instruction)
 
-        assertEquals(pc.minus(1), address)
+        assertEquals(pc.minus(1), address.address)
     }
 
     @Test
@@ -200,60 +202,64 @@ class CpuAddressingModeTest {
         ram.write(Address(2), NesByte(0))
 
         val pc = ProgramCounter(0)
-        val address = cpu.decodeOperationAddress(pc, instruction)
+        val address = cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x0150), address)
+        assertEquals(Address(0x0150), address.address)
     }
 
     @Test
     fun decodePreIndexedIndirect() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
+        val instruction =
+            InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(101))
         cpu.registers.storeX(NesByte(1))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x0152), address)
+        assertEquals(Address(0x0152), address.address)
     }
 
     @Test
     fun decodePreIndexedIndirectOverflows() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
+        val instruction =
+            InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PreIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(246))
         cpu.registers.storeX(NesByte(110))   // 246 + 110 will effectively point to 100
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x0150), address)
+        assertEquals(Address(0x0150), address.address)
     }
 
     @Test
     fun decodePostIndirectIndexed() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
+        val instruction =
+            InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(104))
         cpu.registers.storeY(NesByte(0))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc + 1, instruction)
 
-        assertEquals(Address(0x0153), address)
+        assertEquals(Address(0x0153), address.address)
     }
 
     @Test
     fun decodePostIndirectIndexedCrossingPage() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
+        val instruction =
+            InstructionDescription.fromInstructionCode(InstructionCode.ADC, AddressingMode.PostIndexedIndirect)
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(246))
         cpu.registers.storeY(NesByte(10))
 
         val pc = ProgramCounter(0)
-        val address = this.cpu.decodeOperationAddress(pc, instruction)
+        val address = this.cpu.decodeOperationAddress(pc+1, instruction)
 
-        assertEquals(Address(256), address)
+        assertEquals(Address(256), address.address)
     }
 }

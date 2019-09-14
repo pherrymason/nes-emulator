@@ -98,23 +98,17 @@ class CPU6502(private var ram: RAM) {
         when (instructionDescription.mode) {
             AddressingMode.Immediate -> {
                 // 2 bytes
-                //value = this.ram[programCounter + 1];
                 return DecodedAddressMode(programCounter)
             }
 
             AddressingMode.ZeroPage -> {
                 // 2 bytes
-                //val address = this.ram[(programCounter + 1u).toInt()];
-                //value = this.ram[address.toInt()]
                 val lo = this.ram.read(programCounter)
                 return DecodedAddressMode(Address(lo, NesByte(0x00)))
             }
 
             AddressingMode.ZeroPageX -> {
                 // 2 bytes
-                //val address = this.ram[programCounter + 1].plus(this.registers.x).and(0xFF);
-                //value = this.ram[address]
-
                 val lo = this.ram.read(programCounter ).plus(this.registers.x)
                 return DecodedAddressMode(Address(lo.and(0xFF), 0x00))
             }
@@ -142,7 +136,7 @@ class CPU6502(private var ram: RAM) {
                 //value = this.ram[address]
                 val lo = this.ram.read(programCounter)
                 // Bug: Missing incrementing programCounter
-                val hi = this.ram.read(programCounter + 2)
+                val hi = this.ram.read(programCounter + 1)
                 val address = Address(lo, hi)
 
                 // Should check here if address changed page: need to indicate
@@ -218,13 +212,14 @@ class CPU6502(private var ram: RAM) {
             }
 
             AddressingMode.Relative -> {
-                var relative = this.ram.read(programCounter)
+                var valor : Int = this.ram.read(programCounter).byte.toInt()
+                valor = valor.minus(128)
 
-                relative = relative.minus(128)
+                val address = programCounter.plus(valor)
 
                 // bug: absolute address is wrong because we need to take into account
                 // the length of the current opcode. PC is still pointing to start of instruction
-                return DecodedAddressMode(programCounter.plus(relative), Address(relative, 0x00))
+                return DecodedAddressMode(address, Address(NesByte(valor), 0x00))
             }
             else -> {
                 //AddressingMode.Accumulator ->
