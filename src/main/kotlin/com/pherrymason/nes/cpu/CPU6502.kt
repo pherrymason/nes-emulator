@@ -59,8 +59,8 @@ class CPU6502(private var ram: RAM) {
             INC -> opINC(decodedAddress)
             INX -> opINX(decodedAddress)
             INY -> opINY(decodedAddress)
-            JMP -> toImplement(instructionDescription)
-            JSR -> toImplement(instructionDescription)
+            JMP -> opJMP(decodedAddress)
+            JSR -> opJSR(decodedAddress)
             LDA -> toImplement(instructionDescription)
             LDX -> toImplement(instructionDescription)
             LDY -> toImplement(instructionDescription)
@@ -454,6 +454,27 @@ class CPU6502(private var ram: RAM) {
 
         registers.ps.zeroFlag = (result and 0xFF) == 0
         registers.ps.negativeFlag = result > 255
+    }
+
+    private fun opJMP(decodedAddress: DecodedAddressMode) {
+        registers.pc++
+        registers.pc++
+
+        registers.pc = decodedAddress.address
+    }
+
+    private fun opJSR(decodedAddress: DecodedAddressMode) {
+        // The JSR instruction pushes the address (minus one)
+        // of the return point on to the stack and then sets
+        // the program counter to the target memory address.
+        registers.pc--
+        write(ram.STACK_ADDRESS + registers.sp, registers.pc.highByte())
+        registers.sp--
+
+        write(ram.STACK_ADDRESS + registers.sp, registers.pc.lowByte())
+        registers.sp--
+
+        registers.pc = decodedAddress.address
     }
 }
 

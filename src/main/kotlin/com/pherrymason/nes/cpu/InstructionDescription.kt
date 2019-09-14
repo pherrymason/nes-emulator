@@ -87,17 +87,10 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     IncrementX(NesByte(0xE8), InstructionCode.INX, AddressingMode.Implied),
     IncrementY(NesByte(0xC8), InstructionCode.INY, AddressingMode.Implied),
 
-    JumpAbsolute(
-        NesByte(0x4C),
-        InstructionCode.JMP,
-        AddressingMode.Absolute
-    ),
+    JumpAbsolute(NesByte(0x4C), InstructionCode.JMP, AddressingMode.Absolute),
+    JumpIndirect(NesByte(0x6C), InstructionCode.JMP, AddressingMode.Indirect),
 
-    JumpIndirect(
-        NesByte(0x6C),
-        InstructionCode.JMP,
-        AddressingMode.Indirect
-    );
+    JumptoSubroutine(NesByte(0x20), InstructionCode.JSR, AddressingMode.Absolute);
 
     companion object {
         fun fromInstructionCode(code: InstructionCode, mode: AddressingMode): InstructionDescription {

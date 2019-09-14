@@ -619,4 +619,41 @@ class CpuOpCodeTest {
         assertEquals(true, cpu.registers.ps.zeroFlag)
         assertEquals(true, cpu.registers.ps.negativeFlag)
     }
+
+    @Test
+    fun JMPTest() {
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.JMP, AddressingMode.Absolute)
+
+        // Scenario 1
+        val jumpTo = Address(0x200)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, jumpTo.lowByte())
+        ram.write(ram.PROGRAM_ADDRESS + 2, jumpTo.highByte())
+        cpu.registers.pc = ram.PROGRAM_ADDRESS;
+        cpu.clock()
+
+        assertEquals(jumpTo, cpu.registers.pc)
+    }
+
+    @Test
+    fun JSRTest() {
+        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.JSR, AddressingMode.Absolute)
+
+        // Scenario 1
+        val jumpTo = Address(0x200)
+        cpu.reset()
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, jumpTo.lowByte())
+        ram.write(ram.PROGRAM_ADDRESS + 2, jumpTo.highByte())
+        cpu.registers.pc = ram.PROGRAM_ADDRESS;
+        cpu.clock()
+
+        assertEquals(jumpTo, cpu.registers.pc)
+
+        val addressAtStack = Address(
+            cpu.read(ram.STACK_ADDRESS + 0xFE),
+            cpu.read(ram.STACK_ADDRESS + 0xFF)
+        )
+        assertEquals(ram.PROGRAM_ADDRESS, addressAtStack)
+    }
 }

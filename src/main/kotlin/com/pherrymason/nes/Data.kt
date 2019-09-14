@@ -8,6 +8,8 @@ open class NesByte constructor(val byte: UByte) {
     infix operator fun plus(other: Int): NesByte = NesByte(this.byte.plus(other.toUInt()).toUByte())
     infix operator fun minus(other: Int): NesByte = NesByte(byte.minus(other.toUInt()).toUByte())
     infix operator fun minus(other: NesByte): NesByte = NesByte(byte.minus(other.byte).toUByte())
+    operator fun inc(): NesByte = NesByte((byte + 1u).toInt())
+    operator fun dec(): NesByte = NesByte((byte - 1u).toInt())
 
     infix fun and(other: Int): NesByte = NesByte(byte.toInt().and(other))
     infix fun and(other: NesByte): NesByte = NesByte(byte.and(other.byte))
@@ -45,21 +47,11 @@ data class Word constructor(val word: UShort) {
     constructor(lo: NesByte, hi: Int) : this(hi.shl(8).or(lo.toInt()))
     constructor(word: Int) : this(word.toUShort())
 
-    fun shl(bitCount: Int): Word {
-        return Word(this.word.toInt().shl(bitCount))
-    }
+    fun shl(bitCount: Int): Word = Word(this.word.toInt().shl(bitCount))
+    fun shr(bitCount: Int): Word = Word(this.word.toInt().shr(bitCount))
 
-    fun shr(bitCount: Int): Word {
-        return Word(this.word.toInt().shr(bitCount))
-    }
-
-    infix fun or(other: Int): Word {
-        return Word(this.word.toInt() or other)
-    }
-
-    fun and(other: Int): Word {
-        return Word(this.word.toInt() and other)
-    }
+    infix fun or(other: Int): Word = Word(this.word.toInt() or other)
+    infix fun and(other: Int): Word = Word(this.word.toInt() and other)
 
     infix operator fun minus(other: Int): Word = Word(word.toShort().minus(other).toUShort())
     infix operator fun plus(other: Word): Word = Word((this.word + other.word).toUShort())
