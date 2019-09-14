@@ -354,6 +354,6 @@ class CpuOpCodeTest {
         cpu.clock()
         assertEquals(false, cpu.registers.ps.carryBit)
         assertEquals(false, cpu.registers.ps.zeroFlag)
-        assertEquals(false, cpu.registers.ps.negativeFlag)
+        assertEquals(true, cpu.registers.ps.negativeFlag)
     }
 }

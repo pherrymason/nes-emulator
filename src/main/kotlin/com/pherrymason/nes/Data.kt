@@ -7,8 +7,9 @@ open class NesByte constructor(val byte: UByte) {
     infix operator fun plus(other: NesByte): NesByte = NesByte(byte.plus(other.byte).toUByte())
     infix operator fun plus(other: Int): NesByte = NesByte(this.byte.plus(other.toUInt()).toUByte())
     infix operator fun minus(other: Int): NesByte = NesByte(byte.minus(other.toUInt()).toUByte())
+    infix operator fun minus(other: NesByte): NesByte = NesByte(byte.minus(other.byte).toUByte())
 
-    infix fun and(other: Int): NesByte = NesByte(byte.toInt().and(other))
+            infix fun and(other: Int): NesByte = NesByte(byte.toInt().and(other))
     infix fun and(other: NesByte): NesByte = NesByte(byte.and(other.byte))
     infix fun or(other: NesByte): NesByte = NesByte(byte.or(other.byte))
 

@@ -367,10 +367,11 @@ class CPU6502(private var ram: RAM) {
     private fun opCMP(decodedAddress: DecodedAddressMode) {
         registers.pc++
         val operand = read(decodedAddress.address)
+        val temp = registers.a.byte.toShort() - operand.byte.toShort()
 
         registers.ps.carryBit = (operand <= registers.a)
         registers.ps.zeroFlag = (operand == registers.a)
-
+        registers.ps.negativeFlag = temp and 0x80 == 0x80
     }
 }
 
