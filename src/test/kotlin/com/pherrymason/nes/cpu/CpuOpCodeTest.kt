@@ -3,7 +3,7 @@ package com.pherrymason.nes.cpu
 import com.pherrymason.nes.Address
 import com.pherrymason.nes.RAM
 import com.pherrymason.nes.NesByte
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 @ExperimentalUnsignedTypes
@@ -13,7 +13,7 @@ class CpuOpCodeTest {
 
     @Test
     fun ANDTest() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.AND, AddressingMode.Immediate)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.AND, AddressingMode.Immediate)
         ram.write(Address(0), instruction.opcode)
 
         // --------------------------------------------------
@@ -53,7 +53,7 @@ class CpuOpCodeTest {
 
     @Test
     fun BRKTest() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BRK, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.BRK, AddressingMode.Implied)
 
         ram.write(Address(0), instruction.opcode)
         ram.write(Address(1), NesByte(0x00))
@@ -86,8 +86,8 @@ class CpuOpCodeTest {
         // program counter to cause a branch to a new location
         // This scenario should jump to 0x010 if carry flag.
         // else it should jump to 0x02
-        val instruction = InstructionDescription.fromInstructionCode(
-            InstructionCode.BCC, AddressingMode
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(
+            OPCode.BCC, AddressingMode
                 .Relative
         )
 
@@ -115,8 +115,8 @@ class CpuOpCodeTest {
         // program counter to cause a branch to a new location
         // This scenario should jump to 0x010 if carry flag.
         // else it should jump to 0x02
-        val instruction = InstructionDescription.fromInstructionCode(
-            InstructionCode.BCS, AddressingMode
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(
+            OPCode.BCS, AddressingMode
                 .Relative
         )
 
@@ -142,7 +142,7 @@ class CpuOpCodeTest {
     fun BEQTest() {
         // If the zero flag is set then add the relative displacement to the program counter
         // to cause a branch to a new location
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BEQ, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.BEQ, AddressingMode.Relative)
 
         // Scenario 1: Zero flag is set
         ram.write(Address(0), instruction.opcode)
@@ -163,7 +163,7 @@ class CpuOpCodeTest {
     fun BNETest() {
         // If the zero flag is clear then add the relative displacement to the program
         // counter to cause a branch to a new location.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BNE, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.BNE, AddressingMode.Relative)
 
         // Scenario 1: Zero flag is clear
         ram.write(Address(0), instruction.opcode)
@@ -185,7 +185,7 @@ class CpuOpCodeTest {
     fun BPLTest() {
         // If the negative flag is clear then add the relative displacement to the
         // program counter to cause a branch to a new location.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BPL, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.BPL, AddressingMode.Relative)
 
         // Scenario 1: Zero flag is clear
         ram.write(Address(0), instruction.opcode)
@@ -207,7 +207,7 @@ class CpuOpCodeTest {
     fun BMITest() {
         // If the negative flag is set then add the relative displacement to the program counter to cause a branch to a
         // new location.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BMI, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.BMI, AddressingMode.Relative)
 
         // Scenario 1: Zero flag is set
         ram.write(Address(0), instruction.opcode)
@@ -229,7 +229,7 @@ class CpuOpCodeTest {
     fun BVCTest() {
         // If the negative flag is set then add the relative displacement to the program counter to cause a branch to a
         // new location.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BVC, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.BVC, AddressingMode.Relative)
 
         // Scenario 1: Zero flag is set
         ram.write(Address(0), instruction.opcode)
@@ -251,7 +251,7 @@ class CpuOpCodeTest {
     fun BVSTest() {
         // If the negative flag is set then add the relative displacement to the program counter to cause a branch to a
         // new location.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.BVS, AddressingMode.Relative)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.BVS, AddressingMode.Relative)
 
         // Scenario 1: Zero flag is set
         ram.write(Address(0), instruction.opcode)
@@ -272,7 +272,7 @@ class CpuOpCodeTest {
     @Test
     fun CLCTest() {
         // Set the carry flag to zero.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLC, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.CLC, AddressingMode.Implied)
 
         ram.write(Address(0), instruction.opcode)
         cpu.registers.ps.carryBit = true
@@ -284,7 +284,7 @@ class CpuOpCodeTest {
     @Test
     fun CLDTest() {
         // Set the decimal mode flag to zero.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLD, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.CLD, AddressingMode.Implied)
 
         ram.write(Address(0), instruction.opcode)
         cpu.registers.ps.decimalMode = true
@@ -296,7 +296,7 @@ class CpuOpCodeTest {
     @Test
     fun CLITest() {
         // Set the interrupt flag to zero.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLI, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.CLI, AddressingMode.Implied)
 
         ram.write(Address(0), instruction.opcode)
         cpu.registers.ps.interruptDisabled = true
@@ -308,7 +308,7 @@ class CpuOpCodeTest {
     @Test
     fun CLVTest() {
         // Set the overflow flag to zero.
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CLV, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.CLV, AddressingMode.Implied)
 
         ram.write(Address(0), instruction.opcode)
         cpu.registers.ps.overflowFlag = true
@@ -329,7 +329,7 @@ class CpuOpCodeTest {
         //V 	Overflow Flag 	Not affected
         //N 	Negative Flag 	Set if bit 7 of the result is set
 
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CMP, AddressingMode.Immediate)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.CMP, AddressingMode.Immediate)
 
         // Scenario 1: M <= A
         ram.write(Address(0), instruction.opcode)
@@ -366,7 +366,7 @@ class CpuOpCodeTest {
         // This instruction compares the contents of the X register with another memory held value and
         // sets the zero and carry flags as appropriate.
         // Z,C,N = X-M
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CPX, AddressingMode.Immediate)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.CPX, AddressingMode.Immediate)
 
         // Scenario 1: X >= M
         ram.write(Address(0), instruction.opcode)
@@ -403,7 +403,7 @@ class CpuOpCodeTest {
         // This instruction compares the contents of the Y register with another memory held value and
         // sets the zero and carry flags as appropriate.
         // Z,C,N = Y-M
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.CPY, AddressingMode.Immediate)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.CPY, AddressingMode.Immediate)
 
         // Scenario 1: Y >= M
         ram.write(Address(0), instruction.opcode)
@@ -440,7 +440,7 @@ class CpuOpCodeTest {
         // Subtracts one from the value held at a specified memory location setting the zero and
         // negative flags as appropriate.
         // M,Z,N = M-1
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.DEC, AddressingMode.ZeroPage)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.DEC, AddressingMode.ZeroPage)
 
         // Scenario 1: Result is not zero nor negative
         ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
@@ -478,7 +478,7 @@ class CpuOpCodeTest {
     fun DEXTest() {
         // Subtracts one from the X register setting the zero and negative flags as appropriate.
         // X,Z,N = X-1
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.DEX, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.DEX, AddressingMode.Implied)
 
         // Scenario 1: Result is not zero nor negative
         ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
@@ -512,7 +512,7 @@ class CpuOpCodeTest {
     fun DEYTest() {
         // Subtracts one from the Y register setting the zero and negative flags as appropriate.
         // Y,Z,N = Y-1
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.DEY, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.DEY, AddressingMode.Implied)
 
         // Scenario 1: Result is not zero nor negative
         ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
@@ -547,7 +547,7 @@ class CpuOpCodeTest {
         // Adds one to the value held at a specified memory location setting the zero and
         // negative flags as appropriate.
         // M,Z,N = M+1
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.INC, AddressingMode.ZeroPage)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.INC, AddressingMode.ZeroPage)
 
         // Scenario 1: Result is not zero nor negative
         ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
@@ -574,7 +574,7 @@ class CpuOpCodeTest {
     fun INXTest() {
         // Adds one to the X register setting the zero and negative flags as appropriate.
         // X,Z,N = X+1
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.INX, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.INX, AddressingMode.Implied)
 
         // Scenario 1: Result is not zero nor negative
         ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
@@ -599,7 +599,7 @@ class CpuOpCodeTest {
     fun INYTest() {
         // Adds one to the Y register setting the zero and negative flags as appropriate.
         // Y,Z,N = Y+1
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.INY, AddressingMode.Implied)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.INY, AddressingMode.Implied)
 
         // Scenario 1: Result is not zero nor negative
         ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
@@ -622,7 +622,7 @@ class CpuOpCodeTest {
 
     @Test
     fun JMPTest() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.JMP, AddressingMode.Absolute)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.JMP, AddressingMode.Absolute)
 
         // Scenario 1
         val jumpTo = Address(0x200)
@@ -637,7 +637,7 @@ class CpuOpCodeTest {
 
     @Test
     fun JSRTest() {
-        val instruction = InstructionDescription.fromInstructionCode(InstructionCode.JSR, AddressingMode.Absolute)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.JSR, AddressingMode.Absolute)
 
         // Scenario 1
         val jumpTo = Address(0x200)
@@ -655,5 +655,299 @@ class CpuOpCodeTest {
             cpu.read(ram.STACK_ADDRESS + 0xFF)
         )
         assertEquals(ram.PROGRAM_ADDRESS, addressAtStack)
+    }
+
+    @Test
+    fun LDATest() {
+        // Z: Set if A = 0
+        // N: set if bit 7 of A is set
+        var value = NesByte(0x01)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.LDA, AddressingMode.Immediate)
+
+        // Scenario 1: Immediate
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.a, "Wrong register A value in addressing mode $instruction")
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 2: value is 0
+        value = NesByte(0x00)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.a, "Wrong register A value in addressing mode $instruction")
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 3: value is negative
+        value = NesByte(0x81)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.a, "Wrong register A value in addressing mode $instruction")
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+    }
+
+    @Test
+    fun LDXTest() {
+        // Z: Set if X = 0
+        // N: set if bit 7 of X is set
+        var value = NesByte(0x01)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.LDX, AddressingMode.Immediate)
+
+        // Scenario 1: Immediate
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.x, "Wrong register X value")
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 2: value is 0
+        value = NesByte(0x00)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.x, "Wrong register X value")
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 3: value is negative
+        value = NesByte(0x81)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.x, "Wrong register X value")
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+    }
+
+    @Test
+    fun LDYTest() {
+        // Z: Set if Y = 0
+        // N: set if bit 7 of Y is set
+        var value = NesByte(0x01)
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.LDY, AddressingMode.Immediate)
+
+        // Scenario 1: Immediate
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.y, "Wrong register Y value")
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 2: value is 0
+        value = NesByte(0x00)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.y, "Wrong register Y value")
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 3: value is negative
+        value = NesByte(0x81)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, value)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(value, cpu.registers.y, "Wrong register Y value")
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+    }
+
+
+    @Test
+    fun LSRTest() {
+        // Logical Shift Right
+        // A,C,Z,N = A/2 or M,C,Z,N = M/2
+        // Each of the bits in A or M is shift one place to the right.
+        // The bit that was in bit 0 is shifted into the carry flag. Bit 7 is set to zero.
+
+        // Scenario 1: default
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.LSR, AddressingMode.Accumulator)
+        cpu.registers.a = NesByte(0b01010101)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(NesByte(0b00101010), cpu.registers.a)
+        assertTrue(cpu.registers.ps.carryBit)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 2: result is 0
+        cpu.registers.a = NesByte(0b00000001)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(NesByte(0b00000000), cpu.registers.a)
+        assertTrue(cpu.registers.ps.carryBit)
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+    }
+
+    @Test
+    fun ORATest() {
+
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.ORA, AddressingMode.Immediate)
+
+
+        // Scenario 1: default
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0b00101010))
+        cpu.registers.a = NesByte(0b01010101)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0b01111111), cpu.registers.a)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+
+        // Scenario 2: result is 0
+        cpu.reset()
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0b00000000))
+        cpu.registers.a = NesByte(0b00000000)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0x00), cpu.registers.a)
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: result is negative
+        cpu.reset()
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(0b10101010))
+        cpu.registers.a = NesByte(0b01010101)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0xFF), cpu.registers.a)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue(cpu.registers.ps.negativeFlag)
+
+        // TODO test AbsoluteX, AbsoluteY and IndirectIndexed crossing pages and spending 1 cycle more
+    }
+
+    @Test
+    fun PHATest() {
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PHA, AddressingMode.Implied)
+
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.STACK_ADDRESS + cpu.registers.sp, NesByte(0xFF))
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.a = NesByte(0)
+        cpu.clock()
+
+        assertEquals(cpu.registers.a, ram.read(ram.STACK_ADDRESS + cpu.registers.sp + 1 ))
+    }
+
+    @Test
+    fun PHPTest() {
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PHP, AddressingMode.Implied)
+
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.ps.negativeFlag = true
+        cpu.registers.ps.carryBit = true
+        cpu.registers.ps.zeroFlag = true
+        cpu.registers.ps.overflowFlag = true
+        cpu.registers.ps.interruptDisabled = true
+        cpu.registers.ps.decimalMode = true
+        cpu.registers.ps.breakCommand = true
+        cpu.registers.ps.unusedFlag = true
+        cpu.clock()
+
+        assertEquals(cpu.registers.ps.dump(), ram.read(ram.STACK_ADDRESS + cpu.registers.sp + 1))
+    }
+
+    @Test
+    fun PLATest() {
+        // Pull accumulator
+        // Scenario 1
+        cpu.reset()
+        var instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PHA, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.a = NesByte(0x02)
+        cpu.clock()
+
+        instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PLA, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.a = NesByte(0)
+        cpu.clock()
+
+        assertEquals(NesByte(0x02), cpu.registers.a)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        assertFalse(cpu.registers.ps.zeroFlag)
+
+        // Scenario 2: negative value is pulled from stack
+        cpu.reset()
+        instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PHA, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.a = NesByte(0x80)
+        cpu.clock()
+
+        instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PLA, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.a = NesByte(0)
+        cpu.clock()
+
+        assertEquals(NesByte(0x80), cpu.registers.a)
+        assertTrue(cpu.registers.ps.negativeFlag)
+        assertFalse(cpu.registers.ps.zeroFlag)
+
+        // Scenario 3: zero value is pulled from stack
+        cpu.reset()
+        instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PHA, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.a = NesByte(0x00)
+        cpu.clock()
+
+        instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PLA, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.a = NesByte(0xFF)
+        cpu.clock()
+
+        assertEquals(NesByte(0x00), cpu.registers.a)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        assertTrue(cpu.registers.ps.zeroFlag)
     }
 }

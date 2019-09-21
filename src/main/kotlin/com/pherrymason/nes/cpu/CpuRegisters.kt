@@ -98,6 +98,7 @@ class CpuRegisters {
     fun reset() {
         this.pc = Word(0)
         this.ps = ProcessorStatus()
+        this.sp = NesByte(0xFF)
         this.x = NesByte(0)
         this.y = NesByte(0)
     }

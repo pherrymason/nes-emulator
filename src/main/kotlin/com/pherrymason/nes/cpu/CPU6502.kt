@@ -1,7 +1,7 @@
 package com.pherrymason.nes.cpu
 
 import com.pherrymason.nes.*
-import com.pherrymason.nes.cpu.InstructionCode.*
+import com.pherrymason.nes.cpu.OPCode.*
 
 /**
  * The NES CPU is based on the 6502 processor and runs at approximately 1.79 MHz
@@ -61,15 +61,15 @@ class CPU6502(private var ram: RAM) {
             INY -> opINY(decodedAddress)
             JMP -> opJMP(decodedAddress)
             JSR -> opJSR(decodedAddress)
-            LDA -> toImplement(instructionDescription)
-            LDX -> toImplement(instructionDescription)
-            LDY -> toImplement(instructionDescription)
-            LSR -> toImplement(instructionDescription)
-            NOP -> toImplement(instructionDescription)
-            ORA -> toImplement(instructionDescription)
-            PHA -> toImplement(instructionDescription)
-            PHP -> toImplement(instructionDescription)
-            PLA -> toImplement(instructionDescription)
+            LDA -> opLDA(decodedAddress)
+            LDX -> opLDX(decodedAddress)
+            LDY -> opLDY(decodedAddress)
+            LSR -> opLSR(instructionDescription, decodedAddress)
+            NOP -> opNOP()
+            ORA -> opORA(decodedAddress)
+            PHA -> opPHA(decodedAddress)
+            PHP -> opPHP(decodedAddress)
+            PLA -> opPLA(decodedAddress)
             PLP -> toImplement(instructionDescription)
             ROL -> toImplement(instructionDescription)
             ROR -> toImplement(instructionDescription)
@@ -475,6 +475,69 @@ class CPU6502(private var ram: RAM) {
         registers.sp--
 
         registers.pc = decodedAddress.address
+    }
+
+    private fun opLDA(decodedAddress: DecodedAddressMode) {
+        registers.a = read(decodedAddress.address)
+        registers.ps.zeroFlag = registers.a == NesByte(0)
+        registers.ps.negativeFlag = (registers.a and 0x80) == NesByte(0x80)
+    }
+
+    private fun opLDX(decodedAddress: DecodedAddressMode) {
+        registers.x = read(decodedAddress.address)
+        registers.ps.zeroFlag = registers.x == NesByte(0)
+        registers.ps.negativeFlag = (registers.x and 0x80) == NesByte(0x80)
+    }
+
+    private fun opLDY(decodedAddress: DecodedAddressMode) {
+        registers.y = read(decodedAddress.address)
+        registers.ps.zeroFlag = registers.y == NesByte(0)
+        registers.ps.negativeFlag = (registers.y and 0x80) == NesByte(0x80)
+    }
+
+    private fun opLSR(instruction: InstructionDescription, decodedAddress: DecodedAddressMode) {
+        if (instruction.mode == AddressingMode.Accumulator) {
+            registers.ps.carryBit = registers.a and 0x01 == NesByte(1)
+            registers.a = registers.a.shr(1)
+            registers.ps.zeroFlag = registers.a == NesByte(0)
+        } else {
+            val temp = read(decodedAddress.address)
+            registers.ps.carryBit = temp and 0x01 == NesByte(1)
+            write(decodedAddress.address, temp.shr(1))
+            registers.ps.zeroFlag = temp.shr(1) == NesByte(0)
+        }
+    }
+
+    private fun opNOP() {
+    }
+
+    private fun opORA(decodedAddress: DecodedAddressMode) {
+        val temp = read(decodedAddress.address)
+        registers.a = registers.a or temp
+
+        registers.ps.zeroFlag = registers.a == NesByte(0)
+        registers.ps.negativeFlag = (registers.a and 0x80) == NesByte(0x80)
+    }
+
+    private fun opPHA(decodedAddress: DecodedAddressMode) {
+        // 3 cycles
+        ram.write(ram.STACK_ADDRESS + registers.sp, registers.a)
+        registers.sp--
+    }
+
+    private fun opPHP(decodedAddress: DecodedAddressMode) {
+        // 3 Cycles
+        ram.write(ram.STACK_ADDRESS + registers.sp, registers.ps.dump())
+        registers.sp--
+    }
+
+    private fun opPLA(decodedAddress: DecodedAddressMode) {
+        // 4 Cycles
+        registers.sp++
+        registers.a = read(ram.STACK_ADDRESS + registers.sp)
+
+        registers.ps.negativeFlag = registers.a and 0x80 == NesByte(0x80)
+        registers.ps.zeroFlag = registers.a == NesByte(0)
     }
 }
 
