@@ -261,16 +261,14 @@ class CPU6502(private var ram: RAM) {
         registers.ps.breakCommand = true
 
         // Store PC into the stack
-        this.ram.write(ram.STACK_ADDRESS + registers.sp, registers.pc.lowByte())
-        registers.sp -= 1
-        this.ram.write(ram.STACK_ADDRESS + registers.sp, registers.pc.highByte())
-        registers.sp -= 1
+        pushStack(registers.pc.lowByte())
+        pushStack(registers.pc.highByte())
 
         // Is it really important to enable this interrupt after storing PC on stack?
         registers.ps.interruptDisabled = true
 
         // Store PS into the stack
-        ram.write(ram.STACK_ADDRESS + registers.sp, registers.ps.dump())
+        pushStack(registers.ps.dump())
 
         registers.ps.breakCommand = false;
 
@@ -521,23 +519,29 @@ class CPU6502(private var ram: RAM) {
 
     private fun opPHA(decodedAddress: DecodedAddressMode) {
         // 3 cycles
-        ram.write(ram.STACK_ADDRESS + registers.sp, registers.a)
-        registers.sp--
+        pushStack(registers.a)
     }
 
     private fun opPHP(decodedAddress: DecodedAddressMode) {
         // 3 Cycles
-        ram.write(ram.STACK_ADDRESS + registers.sp, registers.ps.dump())
-        registers.sp--
+        pushStack(registers.ps.dump())
     }
 
     private fun opPLA(decodedAddress: DecodedAddressMode) {
         // 4 Cycles
-        registers.sp++
-        registers.a = read(ram.STACK_ADDRESS + registers.sp)
+        registers.a = pullStack()
 
         registers.ps.updateNegativeFlag(registers.a)
         registers.ps.updateZeroFlag(registers.a)
+    }
+    private fun pullStack(): NesByte {
+        registers.sp++
+        return read(ram.STACK_ADDRESS + registers.sp)
+    }
+
+    private fun pushStack(value: NesByte) {
+        write(ram.STACK_ADDRESS + registers.sp, value)
+        registers.sp--
     }
 }
 
