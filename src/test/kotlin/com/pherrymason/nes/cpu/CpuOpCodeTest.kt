@@ -1071,4 +1071,33 @@ class CpuOpCodeTest {
         assertFalse(cpu.registers.ps.negativeFlag)
         cpu.reset()
     }
+
+    @Test
+    fun RTITest() {
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.RTI, AddressingMode.Implied)
+        cpu.reset()
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.ps.negativeFlag = true
+        cpu.registers.ps.carryBit = true
+        cpu.registers.ps.zeroFlag = true
+        cpu.registers.ps.overflowFlag = true
+        cpu.registers.ps.interruptDisabled = true
+        cpu.registers.ps.decimalMode = true
+        cpu.registers.ps.breakCommand = true
+        cpu.registers.ps.unusedFlag = true
+
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+
+        // Stack should contain:
+        //      [ [PS], [PC-lo], [PC-hi] ] <- End of stack
+        val pc = ram.PROGRAM_ADDRESS + 10
+        cpu.pushStack(pc.highByte())
+        cpu.pushStack(pc.lowByte())
+        cpu.pushStack(cpu.registers.ps.dump())
+
+        cpu.clock()
+
+        assertEquals(cpu.registers.ps.dump(), ram.read(ram.STACK_ADDRESS + 0xFD))
+        assertEquals(pc, cpu.registers.pc)
+    }
 }

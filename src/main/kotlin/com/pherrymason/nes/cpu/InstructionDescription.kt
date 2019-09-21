@@ -145,7 +145,9 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     RotateRight_ZeroPage(NesByte(0x66), OPCode.ROR, AddressingMode.ZeroPage),
     RotateRight_ZeroPageX(NesByte(0x76), OPCode.ROR, AddressingMode.ZeroPageX),
     RotateRight_Absolute(NesByte(0x6E), OPCode.ROR, AddressingMode.Absolute),
-    RotateRight_AbsoluteX(NesByte(0x7E), OPCode.ROR, AddressingMode.AbsoluteXIndexed)
+    RotateRight_AbsoluteX(NesByte(0x7E), OPCode.ROR, AddressingMode.AbsoluteXIndexed),
+
+    ReturnFromInterrupt(NesByte(0x40), OPCode.RTI, AddressingMode.Implied)
     ;
 
     companion object {

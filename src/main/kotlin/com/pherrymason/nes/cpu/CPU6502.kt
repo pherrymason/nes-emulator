@@ -73,7 +73,7 @@ class CPU6502(private var ram: RAM) {
             PLP -> opPLP(decodedAddress)
             ROL -> opROL(instructionDescription, decodedAddress)
             ROR -> opROR(instructionDescription, decodedAddress)
-            RTI -> toImplement(instructionDescription)
+            RTI -> opRTI()
             RTS -> toImplement(instructionDescription)
             SBC -> toImplement(instructionDescription)
             SEC -> toImplement(instructionDescription)
@@ -238,12 +238,12 @@ class CPU6502(private var ram: RAM) {
         this.ram.write(address, value)
     }
 
-    private fun pullStack(): NesByte {
+    fun pullStack(): NesByte {
         registers.sp++
         return read(ram.STACK_ADDRESS + registers.sp)
     }
 
-    private fun pushStack(value: NesByte) {
+    fun pushStack(value: NesByte) {
         write(ram.STACK_ADDRESS + registers.sp, value)
         registers.sp--
     }
@@ -595,6 +595,15 @@ class CPU6502(private var ram: RAM) {
         } else {
             write(decodedAddress.address, temp)
         }
+    }
+
+    private fun opRTI() {
+        val ps = pullStack()
+        registers.ps.updateFromDump(ps)
+
+        val lo = pullStack()
+        val hi = pullStack()
+        registers.pc = Address(lo, hi)
     }
 }
 
