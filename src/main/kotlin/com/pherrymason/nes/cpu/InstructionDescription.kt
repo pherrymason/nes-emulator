@@ -132,7 +132,8 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
 
     PushAccumulator(NesByte(0x48), OPCode.PHA, AddressingMode.Implied),
     PushProcessorStatus(NesByte(0x08), OPCode.PHP, AddressingMode.Implied),
-    PullAccumulator(NesByte(0x68), OPCode.PLA, AddressingMode.Implied)
+    PullAccumulator(NesByte(0x68), OPCode.PLA, AddressingMode.Implied),
+    PullProcessorStatus(NesByte(0x28), OPCode.PLP, AddressingMode.Implied)
     ;
 
     companion object {

@@ -49,6 +49,17 @@ class ProcessorStatus {
         return ps
     }
 
+    fun updateFromDump(dumpedPS: NesByte) {
+        this.carryBit = dumpedPS and 0x01 == NesByte(0x01)
+        this.zeroFlag = dumpedPS and 0x02 == NesByte(0x02)
+        this.interruptDisabled = dumpedPS and 0x04 == NesByte(0x04)
+        this.decimalMode = dumpedPS and 0x06 == NesByte(0x06)
+        this.breakCommand = dumpedPS and 0x08 == NesByte(0x08)
+        this.unusedFlag = dumpedPS and 0x10 == NesByte(0x10)
+        this.overflowFlag = dumpedPS and 0x20 == NesByte(0x20)
+        this.negativeFlag = dumpedPS and 0x40 == NesByte(0x40)
+    }
+
     fun setFlag(flag: Flag, bit: Boolean, byte: NesByte): NesByte {
         val bitValue = NesByte(1).shl(flag.shift)
         if (bit) {

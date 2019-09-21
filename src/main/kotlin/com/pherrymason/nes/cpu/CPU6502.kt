@@ -70,7 +70,7 @@ class CPU6502(private var ram: RAM) {
             PHA -> opPHA(decodedAddress)
             PHP -> opPHP(decodedAddress)
             PLA -> opPLA(decodedAddress)
-            PLP -> toImplement(instructionDescription)
+            PLP -> opPLP(decodedAddress)
             ROL -> toImplement(instructionDescription)
             ROR -> toImplement(instructionDescription)
             RTI -> toImplement(instructionDescription)
@@ -236,6 +236,16 @@ class CPU6502(private var ram: RAM) {
 
     fun write(address: Address, value: NesByte) {
         this.ram.write(address, value)
+    }
+
+    private fun pullStack(): NesByte {
+        registers.sp++
+        return read(ram.STACK_ADDRESS + registers.sp)
+    }
+
+    private fun pushStack(value: NesByte) {
+        write(ram.STACK_ADDRESS + registers.sp, value)
+        registers.sp--
     }
 
     private fun toImplement(instructionDescription: InstructionDescription) {
@@ -534,14 +544,11 @@ class CPU6502(private var ram: RAM) {
         registers.ps.updateNegativeFlag(registers.a)
         registers.ps.updateZeroFlag(registers.a)
     }
-    private fun pullStack(): NesByte {
-        registers.sp++
-        return read(ram.STACK_ADDRESS + registers.sp)
-    }
 
-    private fun pushStack(value: NesByte) {
-        write(ram.STACK_ADDRESS + registers.sp, value)
-        registers.sp--
+    private fun opPLP(decodedAddress: DecodedAddressMode) {
+        // 4 Cycles
+        val temp = pullStack()
+        registers.ps.updateFromDump(temp)
     }
 }
 

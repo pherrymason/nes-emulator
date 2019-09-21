@@ -978,4 +978,31 @@ class CpuOpCodeTest {
         assertFalse(cpu.registers.ps.negativeFlag)
         assertTrue(cpu.registers.ps.zeroFlag)
     }
+
+    @Test
+    fun PLPTest() {
+        // Pull processor status
+        // Scenario 1
+        cpu.reset()
+        var instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PHP, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.ps.negativeFlag = true
+        cpu.registers.ps.carryBit = true
+        cpu.registers.ps.zeroFlag = true
+        cpu.registers.ps.overflowFlag = true
+        cpu.registers.ps.interruptDisabled = true
+        cpu.registers.ps.decimalMode = true
+        cpu.registers.ps.breakCommand = true
+        cpu.registers.ps.unusedFlag = true
+        cpu.clock()
+
+        instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.PLP, AddressingMode.Implied)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(NesByte(0xFF), cpu.registers.ps.dump())
+    }
 }
