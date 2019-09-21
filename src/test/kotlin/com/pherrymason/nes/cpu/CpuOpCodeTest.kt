@@ -24,7 +24,7 @@ class CpuOpCodeTest {
 
         assertEquals(cpu.registers.ps.zeroFlag, false)
         assertEquals(cpu.registers.ps.negativeFlag, true)
-        assertEquals(cpu.registers.a.byte, NesByte(0x8F).byte, "acumulator failed")
+        assertEquals(cpu.registers.a.byte, NesByte(0x8F).byte, "accumulator failed")
 
         // --------------------------------------------------
         // Case 2: Zero flag properly set
@@ -34,8 +34,8 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x70)
         cpu.clock()
 
-        assertEquals(cpu.registers.ps.zeroFlag, true)
-        assertEquals(cpu.registers.ps.negativeFlag, false)
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
         assertEquals(cpu.registers.a.byte, NesByte(0x00).byte)
 
         // --------------------------------------------------
@@ -46,8 +46,8 @@ class CpuOpCodeTest {
         cpu.registers.a = NesByte(0x8F)
         cpu.clock()
 
-        assertEquals(cpu.registers.ps.zeroFlag, false)
-        assertEquals(cpu.registers.ps.negativeFlag, true)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue(cpu.registers.ps.negativeFlag)
         assertEquals(cpu.registers.a.byte, NesByte(0x8F).byte)
     }
 
@@ -566,8 +566,18 @@ class CpuOpCodeTest {
         cpu.registers.pc = ram.PROGRAM_ADDRESS
         cpu.clock()
         assertEquals(NesByte(0), ram.read(Address(255)))
-        assertEquals(true, cpu.registers.ps.zeroFlag)
-        assertEquals(true, cpu.registers.ps.negativeFlag)
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: Result is negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        ram.write(ram.PROGRAM_ADDRESS + 1, NesByte(255))
+        ram.write(Address(255), NesByte(0x7F))
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0x80), ram.read(Address(255)))
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue(cpu.registers.ps.negativeFlag)
     }
 
     @Test
@@ -591,8 +601,17 @@ class CpuOpCodeTest {
         cpu.registers.pc = ram.PROGRAM_ADDRESS
         cpu.clock()
         assertEquals(NesByte(0), cpu.registers.x)
-        assertEquals(true, cpu.registers.ps.zeroFlag)
-        assertEquals(true, cpu.registers.ps.negativeFlag)
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: Result is negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.x = NesByte(0x7F)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0x80), cpu.registers.x)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue(cpu.registers.ps.negativeFlag)
     }
 
     @Test
@@ -607,8 +626,8 @@ class CpuOpCodeTest {
         cpu.registers.pc = ram.PROGRAM_ADDRESS
         cpu.clock()
         assertEquals(NesByte(9), cpu.registers.y)
-        assertEquals(false, cpu.registers.ps.zeroFlag)
-        assertEquals(false, cpu.registers.ps.negativeFlag)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
 
         // Scenario 2: Result is zero
         ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
@@ -616,8 +635,17 @@ class CpuOpCodeTest {
         cpu.registers.pc = ram.PROGRAM_ADDRESS
         cpu.clock()
         assertEquals(NesByte(0), cpu.registers.y)
-        assertEquals(true, cpu.registers.ps.zeroFlag)
-        assertEquals(true, cpu.registers.ps.negativeFlag)
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse( cpu.registers.ps.negativeFlag)
+
+        // Scenario 3: Result is negative
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.y = NesByte(0x7F)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+        assertEquals(NesByte(0x80), cpu.registers.y)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertTrue( cpu.registers.ps.negativeFlag)
     }
 
     @Test

@@ -245,8 +245,8 @@ class CPU6502(private var ram: RAM) {
     private fun opAND(decodedAddress: DecodedAddressMode) {
         val operand = read(decodedAddress.address)
         val result = registers.a and operand
-        registers.setNegativeFlag(result)
-        registers.setZeroFlag(result)
+        registers.ps.updateZeroFlag(result)
+        registers.ps.updateNegativeFlag(result)
         registers.a = result
     }
 
@@ -375,7 +375,7 @@ class CPU6502(private var ram: RAM) {
 
         registers.ps.carryBit = (operand <= registers.a)
         registers.ps.zeroFlag = (operand == registers.a)
-        registers.ps.negativeFlag = temp and 0x80 == 0x80
+        registers.ps.updateNegativeFlag(NesByte(temp))
     }
 
     private fun opCPX(decodedAddress: DecodedAddressMode) {
@@ -385,7 +385,7 @@ class CPU6502(private var ram: RAM) {
 
         registers.ps.carryBit = (operand <= registers.x)
         registers.ps.zeroFlag = (operand == registers.x)
-        registers.ps.negativeFlag = temp and 0x80 == 0x80
+        registers.ps.updateNegativeFlag(NesByte(temp))
     }
 
     private fun opCPY(decodedAddress: DecodedAddressMode) {
@@ -395,7 +395,7 @@ class CPU6502(private var ram: RAM) {
 
         registers.ps.carryBit = (operand <= registers.y)
         registers.ps.zeroFlag = (operand == registers.y)
-        registers.ps.negativeFlag = temp and 0x80 == 0x80
+        registers.ps.updateNegativeFlag(NesByte(temp))
     }
 
     private fun opDEC(decodedAddress: DecodedAddressMode) {
@@ -404,8 +404,8 @@ class CPU6502(private var ram: RAM) {
         val result = operand.toInt() - 1
         write(decodedAddress.address, NesByte(result and 0xFF))
 
-        registers.ps.zeroFlag = result == 0
-        registers.ps.negativeFlag = result < 0
+        registers.ps.updateZeroFlag(NesByte(result))
+        registers.ps.updateNegativeFlag(NesByte(result))
     }
 
     private fun opDEX(decodedAddress: DecodedAddressMode) {
@@ -413,8 +413,8 @@ class CPU6502(private var ram: RAM) {
         val result = registers.x.toInt() - 1
 
         registers.x = NesByte(result)
-        registers.ps.zeroFlag = result == 0
-        registers.ps.negativeFlag = result < 0
+        registers.ps.updateZeroFlag(NesByte(result))
+        registers.ps.updateNegativeFlag(NesByte(result))
     }
 
     private fun opDEY(decodedAddress: DecodedAddressMode) {
@@ -422,8 +422,8 @@ class CPU6502(private var ram: RAM) {
         val result = registers.y.toInt() - 1
 
         registers.y = NesByte(result)
-        registers.ps.zeroFlag = result == 0
-        registers.ps.negativeFlag = result < 0
+        registers.ps.updateZeroFlag(NesByte(result))
+        registers.ps.updateNegativeFlag(NesByte(result))
     }
 
     private fun opINC(decodedAddress: DecodedAddressMode) {
@@ -432,8 +432,8 @@ class CPU6502(private var ram: RAM) {
         val result = operand.toInt() + 1
         write(decodedAddress.address, NesByte(result and 0xFF))
 
-        registers.ps.zeroFlag = (result and 0xFF) == 0
-        registers.ps.negativeFlag = result > 255
+        registers.ps.updateZeroFlag(NesByte(result))
+        registers.ps.updateNegativeFlag(NesByte(result))
     }
 
     private fun opINX(decodedAddress: DecodedAddressMode) {
@@ -442,8 +442,8 @@ class CPU6502(private var ram: RAM) {
         val result = operand.toInt() + 1
         registers.x = NesByte(result and 0xFF)
 
-        registers.ps.zeroFlag = (result and 0xFF) == 0
-        registers.ps.negativeFlag = result > 255
+        registers.ps.updateZeroFlag(NesByte(result))
+        registers.ps.updateNegativeFlag(NesByte(result))
     }
 
     private fun opINY(decodedAddress: DecodedAddressMode) {
@@ -452,8 +452,8 @@ class CPU6502(private var ram: RAM) {
         val result = operand.toInt() + 1
         registers.y = NesByte(result and 0xFF)
 
-        registers.ps.zeroFlag = (result and 0xFF) == 0
-        registers.ps.negativeFlag = result > 255
+        registers.ps.updateZeroFlag(NesByte(result))
+        registers.ps.updateNegativeFlag(NesByte(result))
     }
 
     private fun opJMP(decodedAddress: DecodedAddressMode) {
@@ -479,27 +479,27 @@ class CPU6502(private var ram: RAM) {
 
     private fun opLDA(decodedAddress: DecodedAddressMode) {
         registers.a = read(decodedAddress.address)
-        registers.ps.zeroFlag = registers.a == NesByte(0)
-        registers.ps.negativeFlag = (registers.a and 0x80) == NesByte(0x80)
+        registers.ps.updateZeroFlag(registers.a)
+        registers.ps.updateNegativeFlag(registers.a)
     }
 
     private fun opLDX(decodedAddress: DecodedAddressMode) {
         registers.x = read(decodedAddress.address)
-        registers.ps.zeroFlag = registers.x == NesByte(0)
-        registers.ps.negativeFlag = (registers.x and 0x80) == NesByte(0x80)
+        registers.ps.updateZeroFlag(registers.x)
+        registers.ps.updateNegativeFlag(registers.x)
     }
 
     private fun opLDY(decodedAddress: DecodedAddressMode) {
         registers.y = read(decodedAddress.address)
-        registers.ps.zeroFlag = registers.y == NesByte(0)
-        registers.ps.negativeFlag = (registers.y and 0x80) == NesByte(0x80)
+        registers.ps.updateZeroFlag(registers.y)
+        registers.ps.updateNegativeFlag(registers.y)
     }
 
     private fun opLSR(instruction: InstructionDescription, decodedAddress: DecodedAddressMode) {
         if (instruction.mode == AddressingMode.Accumulator) {
             registers.ps.carryBit = registers.a and 0x01 == NesByte(1)
             registers.a = registers.a.shr(1)
-            registers.ps.zeroFlag = registers.a == NesByte(0)
+            registers.ps.updateZeroFlag(registers.a)
         } else {
             val temp = read(decodedAddress.address)
             registers.ps.carryBit = temp and 0x01 == NesByte(1)
@@ -515,8 +515,8 @@ class CPU6502(private var ram: RAM) {
         val temp = read(decodedAddress.address)
         registers.a = registers.a or temp
 
-        registers.ps.zeroFlag = registers.a == NesByte(0)
-        registers.ps.negativeFlag = (registers.a and 0x80) == NesByte(0x80)
+        registers.ps.updateZeroFlag(registers.a)
+        registers.ps.updateNegativeFlag(registers.a)
     }
 
     private fun opPHA(decodedAddress: DecodedAddressMode) {
@@ -536,8 +536,8 @@ class CPU6502(private var ram: RAM) {
         registers.sp++
         registers.a = read(ram.STACK_ADDRESS + registers.sp)
 
-        registers.ps.negativeFlag = registers.a and 0x80 == NesByte(0x80)
-        registers.ps.zeroFlag = registers.a == NesByte(0)
+        registers.ps.updateNegativeFlag(registers.a)
+        registers.ps.updateZeroFlag(registers.a)
     }
 }
 

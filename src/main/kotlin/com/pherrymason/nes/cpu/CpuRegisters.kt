@@ -26,6 +26,14 @@ class ProcessorStatus {
         N(7), // Negative
     }
 
+    fun updateNegativeFlag(value: NesByte) {
+        this.negativeFlag = value and 0x80 == NesByte(0x80)
+    }
+
+    fun updateZeroFlag(value: NesByte) {
+        this.zeroFlag = (value == NesByte(0))
+    }
+
     fun dump(): NesByte {
         var ps = NesByte(0)
 
@@ -109,38 +117,5 @@ class CpuRegisters {
 
     fun storeY(y: NesByte) {
         this.y = y
-    }
-
-/*
-    fun getFlag(flag: Flag): Boolean {
-        var shift = 0;
-        when (flag){
-            Flag.C -> shift = 0
-            Flag.Z -> shift = 1
-            Flag.I -> shift = 2
-            Flag.D -> shift = 3
-            Flag.B -> shift = 4
-            Flag.U -> shift = 5
-            Flag.V -> shift = 6
-            Flag.N -> shift = 7
-        }
-
-        val bitValue = ps.shr(shift).and(NesByte(0x01))
-
-        return bitValue.toBool()
-    }
-*/
-    fun setNegativeFlag(value: NesByte) {
-        val flag = (value and NesByte(0x80)).toBool()
-        ps.negativeFlag = flag
-    }
-
-    fun setZeroFlag(value: NesByte) {
-        val result = value == NesByte(0)
-        ps.zeroFlag = result
-    }
-
-    fun setInterrupt(i: Boolean) {
-        ps.interruptDisabled = i;
     }
 }
