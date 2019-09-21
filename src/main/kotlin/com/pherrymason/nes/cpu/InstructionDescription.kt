@@ -133,7 +133,19 @@ enum class InstructionDescription constructor(val opcode: NesByte, val instructi
     PushAccumulator(NesByte(0x48), OPCode.PHA, AddressingMode.Implied),
     PushProcessorStatus(NesByte(0x08), OPCode.PHP, AddressingMode.Implied),
     PullAccumulator(NesByte(0x68), OPCode.PLA, AddressingMode.Implied),
-    PullProcessorStatus(NesByte(0x28), OPCode.PLP, AddressingMode.Implied)
+    PullProcessorStatus(NesByte(0x28), OPCode.PLP, AddressingMode.Implied),
+
+    RotateLeft_Accumulator(NesByte(0x2A), OPCode.ROL, AddressingMode.Accumulator),
+    RotateLeft_ZeroPage(NesByte(0x26), OPCode.ROL, AddressingMode.ZeroPage),
+    RotateLeft_ZeroPageX(NesByte(0x36), OPCode.ROL, AddressingMode.ZeroPageX),
+    RotateLeft_Absolute(NesByte(0x2E), OPCode.ROL, AddressingMode.Absolute),
+    RotateLeft_AbsoluteX(NesByte(0x3E), OPCode.ROL, AddressingMode.AbsoluteXIndexed),
+
+    RotateRight_Accumulator(NesByte(0x6A), OPCode.ROR, AddressingMode.Accumulator),
+    RotateRight_ZeroPage(NesByte(0x66), OPCode.ROR, AddressingMode.ZeroPage),
+    RotateRight_ZeroPageX(NesByte(0x76), OPCode.ROR, AddressingMode.ZeroPageX),
+    RotateRight_Absolute(NesByte(0x6E), OPCode.ROR, AddressingMode.Absolute),
+    RotateRight_AbsoluteX(NesByte(0x7E), OPCode.ROR, AddressingMode.AbsoluteXIndexed)
     ;
 
     companion object {

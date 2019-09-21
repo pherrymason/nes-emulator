@@ -71,8 +71,8 @@ class CPU6502(private var ram: RAM) {
             PHP -> opPHP(decodedAddress)
             PLA -> opPLA(decodedAddress)
             PLP -> opPLP(decodedAddress)
-            ROL -> toImplement(instructionDescription)
-            ROR -> toImplement(instructionDescription)
+            ROL -> opROL(instructionDescription, decodedAddress)
+            ROR -> opROR(instructionDescription, decodedAddress)
             RTI -> toImplement(instructionDescription)
             RTS -> toImplement(instructionDescription)
             SBC -> toImplement(instructionDescription)
@@ -517,6 +517,7 @@ class CPU6502(private var ram: RAM) {
     }
 
     private fun opNOP() {
+        // 1 Cycle
     }
 
     private fun opORA(decodedAddress: DecodedAddressMode) {
@@ -549,6 +550,51 @@ class CPU6502(private var ram: RAM) {
         // 4 Cycles
         val temp = pullStack()
         registers.ps.updateFromDump(temp)
+    }
+
+    private fun opROL(instruction: InstructionDescription, decodedAddress: DecodedAddressMode) {
+        var temp = NesByte(0)
+        var bit7 = NesByte(0)
+        if (instruction.mode == AddressingMode.Accumulator) {
+            temp = registers.a.shl(1)
+            bit7 = registers.a.and(0x80).shr(7)
+        } else {
+            temp = read(decodedAddress.address)
+            bit7 = registers.a.and(0x80).shr(7)
+            temp = temp.shl(1)
+        }
+
+        val bit0 = if (registers.ps.carryBit) 0x01 else 0x00
+        temp = temp or NesByte(bit0)
+        registers.ps.carryBit = bit7 == NesByte(1)
+        registers.ps.updateZeroFlag(temp)
+
+        if (instruction.mode == AddressingMode.Accumulator) {
+            registers.a = temp
+        } else {
+            write(decodedAddress.address, temp)
+        }
+    }
+
+    private fun opROR(instruction: InstructionDescription, decodedAddress: DecodedAddressMode) {
+        var temp = NesByte(0)
+        val carryBit = registers.ps.carryBit
+        if (instruction.mode == AddressingMode.Accumulator) {
+            temp = registers.a
+            registers.ps.carryBit = registers.a and 0x01 == NesByte(0x01)
+        } else {
+            temp = read(decodedAddress.address)
+            registers.ps.carryBit = temp and 0x01 == NesByte(0x01)
+        }
+
+        val bit7 = if (carryBit) NesByte(0x80) else NesByte(0x00)
+        temp = temp.shr(1) or bit7
+
+        if (instruction.mode == AddressingMode.Accumulator) {
+            registers.a = temp
+        } else {
+            write(decodedAddress.address, temp)
+        }
     }
 }
 

@@ -820,7 +820,8 @@ class CpuOpCodeTest {
         // Logical Shift Right
         // A,C,Z,N = A/2 or M,C,Z,N = M/2
         // Each of the bits in A or M is shift one place to the right.
-        // The bit that was in bit 0 is shifted into the carry flag. Bit 7 is set to zero.
+        // The bit that was in bit 0 is shifted into the carry flag.
+        // Bit 7 is set to zero.
 
         // Scenario 1: default
         val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.LSR, AddressingMode.Accumulator)
@@ -1004,5 +1005,70 @@ class CpuOpCodeTest {
         cpu.clock()
 
         assertEquals(NesByte(0xFF), cpu.registers.ps.dump())
+    }
+
+    @Test
+    fun ROLTest() {
+        // Move each of the bits in either A or M one place to the left.
+        // Bit 0 is filled with the current value of the carry flag whilst
+        // the old bit 7 becomes the new carry flag value.
+        // Scenario 1: default
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.ROL, AddressingMode.Accumulator)
+        cpu.registers.a = NesByte(0b01010101)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(NesByte(0b10101010), cpu.registers.a)
+        assertFalse(cpu.registers.ps.carryBit)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 2: result is 0
+        cpu.registers.a = NesByte(0b10000000)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.clock()
+
+        assertEquals(NesByte(0b00000000), cpu.registers.a)
+        assertTrue(cpu.registers.ps.carryBit)
+        assertTrue(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+    }
+
+    @Test
+    fun RORTest() {
+        // Move each of the bits in either A or M one place to the right.
+        // Bit 7 is filled with the current value of the carry flag whilst
+        // the old bit 0 becomes the new carry flag value.
+
+        // Scenario 1: Carry is 0
+        val instruction = InstructionDescription.fromOPCodeAddressingMode(OPCode.ROR, AddressingMode.Accumulator)
+        cpu.registers.a = NesByte(0b01010101)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.ps.carryBit = false
+        cpu.clock()
+
+        assertEquals(NesByte(0b00101010), cpu.registers.a)
+        assertTrue(cpu.registers.ps.carryBit)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
+
+        // Scenario 1: Carry is 0
+        cpu.registers.a = NesByte(0b01010100)
+        ram.write(ram.PROGRAM_ADDRESS, instruction.opcode)
+        cpu.registers.pc = ram.PROGRAM_ADDRESS
+        cpu.registers.ps.carryBit = true
+        cpu.clock()
+
+        assertEquals(NesByte(0b10101010), cpu.registers.a)
+        assertFalse(cpu.registers.ps.carryBit)
+        assertFalse(cpu.registers.ps.zeroFlag)
+        assertFalse(cpu.registers.ps.negativeFlag)
+        cpu.reset()
     }
 }
